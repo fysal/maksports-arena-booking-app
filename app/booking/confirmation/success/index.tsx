@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   ArrowRight,
   CalendarDays,
@@ -15,7 +15,8 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import { slotBookingType } from "@/app/lib/types";
+import { UserContext } from "@/app/lib/context";
+import { BookingType } from "@/app/types/booking";
 
 type ConfettiPiece = {
   id: number;
@@ -29,11 +30,15 @@ type ConfettiPiece = {
 export default function BookingSuccessPage({
   booking,
 }: {
-  booking: slotBookingType;
+  booking: BookingType;
 }) {
   const [copied, setCopied] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [showPopConfetti, setShowPopConfetti] = useState(true);
+
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  const { currentUser } = useContext(UserContext);
 
   /*
    * Generate the falling confetti once.
@@ -70,21 +75,6 @@ export default function BookingSuccessPage({
   );
 
   /*
-   * Booking information.
-   * Replace this later with your Firestore/payment data.
-   */
-  //   const booking = {
-  //     reference: "MSA-48291",
-  //     team: "Thunder Strikers FC",
-  //     date: new Date(2026, 7, 15),
-  //     startTime: "4:00 PM",
-  //     endTime: "5:30 PM",
-  //     amount: 120000,
-  //     location: "Maksports Arena",
-  //     status: "Confirmed",
-  //   };
-
-  /*
    * Page entrance + initial confetti explosion.
    */
   useEffect(() => {
@@ -102,7 +92,29 @@ export default function BookingSuccessPage({
     };
   }, []);
 
-  console.log(booking);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (currentUser) setIsLoggedIn(true);
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, [currentUser]);
+
+  function playAudio() {
+    try {
+      const audio = new Audio("/audio/success.mp3");
+      audio.volume = 1;
+      audio.muted = true;
+      audio.play().then(() => {
+        audio.muted = false;
+      });
+    } catch (error) {
+      console.warn("Failed to play", error);
+    }
+  }
+  //Play success sound
+  useEffect(() => {
+ playAudio();
+  }, []);
 
   /*
    * Copy booking reference.
@@ -308,8 +320,8 @@ export default function BookingSuccessPage({
                 </h2>
               </div>
 
-              <div className="flex w-fit items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+              <div className="flex w-fit items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700 capitalize">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-green-500 " />
                 {booking.status}
               </div>
             </div>
@@ -382,7 +394,7 @@ export default function BookingSuccessPage({
                     <p className="text-sm text-slate-400">Location</p>
 
                     <p className="mt-1 text-lg font-bold text-slate-900">
-                      Maksports Arena
+                      Mak Sports Arena
                     </p>
                   </div>
                 </div>
@@ -408,7 +420,7 @@ export default function BookingSuccessPage({
                   <p className="text-sm text-slate-400">Total Paid</p>
 
                   <p className="text-2xl font-black text-slate-900">
-                    UGX {"50000".toLocaleString()}
+                    UGX {booking?.fee?.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -460,15 +472,18 @@ export default function BookingSuccessPage({
               ? "translate-y-0 opacity-100"
               : "translate-y-8 opacity-0"
           }`}>
-          <Link
-            href="/dashboard"
-            className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-7 py-4 font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-            Go to Dashboard
-            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Link>
+          {booking.uid !==" " && (
+            <Link
+              href="/team-management"
+              className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-7 py-4 font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+              Go to Dashboard
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Link>
+          )}
 
           <button
             type="button"
+            
             className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 font-semibold text-slate-700 shadow-sm transition hover:-translate-y-1 hover:bg-slate-50">
             <Share2 className="h-5 w-5" />
             Share Booking
@@ -493,99 +508,6 @@ export default function BookingSuccessPage({
           A confirmation has been sent to your registered contact details.
         </p>
       </div>
-
-      {/* ========================================================= */}
-      {/* ANIMATIONS */}
-      {/* ========================================================= */}
-
-      <style jsx>{`
-        /*
-         * Falling confetti
-         */
-        @keyframes confetti {
-          0% {
-            transform: translateY(-20px) rotate(0deg);
-            opacity: 1;
-          }
-
-          100% {
-            transform: translateY(110vh) rotate(720deg);
-            opacity: 0;
-          }
-        }
-
-        /*
-         * Initial explosive confetti.
-         *
-         * Pieces start at the center and fly outward
-         * for approximately one second.
-         */
-        @keyframes confetti-pop {
-          0% {
-            transform: translate(-50%, -50%) scale(0) rotate(0deg);
-            opacity: 0;
-          }
-
-          8% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.2) rotate(30deg);
-          }
-
-          30% {
-            opacity: 1;
-          }
-
-          100% {
-            transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y)))
-              scale(0.45) rotate(var(--rotation));
-            opacity: 0;
-          }
-        }
-
-        /*
-         * Success check animation
-         */
-        @keyframes success-check {
-          0% {
-            stroke-dasharray: 0 100;
-            transform: scale(0.7);
-            opacity: 0;
-          }
-
-          60% {
-            transform: scale(1.15);
-            opacity: 1;
-          }
-
-          100% {
-            stroke-dasharray: 100 0;
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-
-        .animate-confetti {
-          animation-name: confetti;
-          animation-timing-function: linear;
-          animation-iteration-count: 1;
-        }
-
-        .animate-confetti-pop {
-          animation: confetti-pop 900ms cubic-bezier(0.15, 0.8, 0.3, 1) forwards;
-        }
-
-        .animate-success-check {
-          animation: success-check 0.8s ease-out 0.2s both;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .animate-confetti,
-          .animate-confetti-pop,
-          .animate-success-check {
-            animation: none !important;
-          }
-        }
-      `}</style>
     </main>
   );
 }

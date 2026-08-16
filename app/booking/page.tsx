@@ -21,9 +21,10 @@ import ReviewAndPayment from "../components/booking/ReviewAndPayment";
 import Navbar from "../components/nav/Navbar";
 import { TeamContenxt, UserContext } from "../lib/context";
 import BookingHandler from "../lib/booking_handler";
-import { slotBookingType } from "../lib/types";
 import { generateRandomIds } from "../lib/utils/utils";
 import { useRouter } from "next/navigation";
+import { BookingType } from "../types/booking";
+import Footer from "../components/Footer";
 
 export interface TimeSlot {
   startTime: string;
@@ -118,14 +119,23 @@ export default function BookPage() {
   };
 
   async function onProceedToPayment() {
-    const payload: slotBookingType = {
-      ...teamInfo,
+    const payload: BookingType = {
+      teamName: teamInfo.teamName,
       teamId: teamInformation?.id ?? generateRandomIds(),
       fee,
       duration,
       date: date!,
-      ...selectedSlot,
+      startTime: selectedSlot!.startTime,
+      endTime: selectedSlot!.endTime,
+      numberOfPlayers: teamInfo.numberOfPlayers,
       createdBy: currentUser?.uid ?? "anonymous",
+      uid: currentUser?.uid ?? " ",
+      contactInformation: {
+        name: teamInfo.contactPerson ?? " ",
+        phone: teamInfo.phone,
+        email: teamInfo.email ?? " ",
+        uid: currentUser?.uid ?? " ",
+      },
     };
 
     try {
@@ -336,6 +346,7 @@ export default function BookPage() {
           )}
         </div>
       </div>
+      <Footer/>
     </main>
   );
 }

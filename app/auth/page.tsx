@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { Trophy, Users } from "lucide-react";
 import Navbar from "../components/nav/Navbar";
 import TeamLogin from "./widgets/teamLogin";
 import RegisterTeam from "./widgets/registerTeam";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Footer from "../components/Footer";
 
 export default function AuthPage() {
   const tabs = ["login", "register team"];
@@ -30,7 +29,7 @@ export default function AuthPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
       <Navbar />
-      <div className="mx-auto flex min-h-screen max-w-7xl items-center px-6 py-10">
+      <div className="mx-auto flex min-h-screen max-w-7xl items-center px-6 py-10 mb-10">
         <div className="w-full">
           {/* Header */}
           <div className="mb-12 text-center">
@@ -97,6 +96,7 @@ export default function AuthPage() {
           </div>
         </div>
       </div>
+      <Footer/>
     </main>
   );
 }

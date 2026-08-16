@@ -1,4 +1,4 @@
-export type UserRole = "team" | "admin";
+export type UserRole = "team" | "admin" | "customer";
 
 export interface UserProfile {
   uid: string;
@@ -8,4 +8,21 @@ export interface UserProfile {
   role: UserRole;
   teamId?: string;
   createdAt: string;
+  isAnonymous: boolean;
+  refreshToken?: string;
+  emailVerified?: boolean;
+  accountType: UserRole;
+
 }
+
+
+export type currentUserType = {
+  uid: string;
+  teamName: string;
+  name: string;
+  phoneNumber: string;
+  accountType: UserRole;
+  photoUrl: string;
+  email: string;
+};
+

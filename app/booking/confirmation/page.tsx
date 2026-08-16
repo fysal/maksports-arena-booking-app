@@ -1,6 +1,7 @@
 import React from "react";
 import BookingSuccessPage from "./success";
 import { redirect } from "next/navigation";
+import BookingFailedPage from "./failed/page";
 
 interface ConfirmationPageProps {
   searchParams: Promise<{
@@ -23,18 +24,16 @@ const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
     },
   );
 
-  //const booking = await response.json();
-  // // console.log(booking);
-  // return;
-
   if (response.status === 404) {
     return redirect("/404");
   }
+
+  const data = await response.json();
+
   if (response.status === 200) {
-    const data = await response.json();
     return <BookingSuccessPage booking={data.booking} />;
   }
-  return "Serve error";
+  return <BookingFailedPage />;
 };
 
 export default ConfirmationPage;

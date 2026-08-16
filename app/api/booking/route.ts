@@ -9,9 +9,24 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { teamId, teamName, date, startTime, endTime, createdBy } = body;
+    const {
+      teamId,
+      teamName,
+      date,
+      startTime,
+      endTime,
+      fee,
+      duration,
+    } = body;
 
-    if (!teamId || !date || !startTime || !endTime || !createdBy) {
+    if (
+      !teamId ||
+      !date ||
+      !startTime ||
+      !endTime ||
+      !fee ||
+      !duration
+    ) {
       return NextResponse.json(
         {
           error: "Missing required booking information",
@@ -35,6 +50,7 @@ export async function POST(request: NextRequest) {
         if (slot?.status === "booked") {
           throw new Error("SLOT_ALREADY_BOOKED");
         }
+        if (slot?.status === "pending") throw new Error("SLOT_BEING_BOOKED");
 
         if (slot?.status === "blocked") {
           throw new Error("SLOT_BLOCKED");
@@ -53,6 +69,7 @@ export async function POST(request: NextRequest) {
       });
 
       transaction.set(bookingRef, {
+        ...body,
         teamId,
         teamName,
         date,
@@ -60,7 +77,8 @@ export async function POST(request: NextRequest) {
         endTime,
         bookingId: bookingRef.id,
         status: "confirmed",
-        createdBy,
+        fee,
+        duration,
         createdAt: FieldValue.serverTimestamp(),
       });
     });
@@ -82,6 +100,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (error instanceof Error && error.message === "SLOT_BEING_BOOKED") {
+      return NextResponse.json(
+        {
+          error:
+            "This slot is being booked by someone ahead of you. Wait a minute then try booking it again.",
+        },
+        { status: 409 },
+      );
+    }
     if (error instanceof Error && error.message === "SLOT_BLOCKED") {
       return NextResponse.json(
         {
@@ -100,12 +127,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
+//Fetch after posting for verication
 export async function GET(req: NextRequest) {
   try {
     const ref = req.nextUrl.searchParams.get("id");
-
-    console.log("ref");
-    console.log(ref);
     // Validate reference
     if (!ref) {
       return NextResponse.json(
@@ -132,8 +157,6 @@ export async function GET(req: NextRequest) {
     }
     const data: any = (await dataSnap).data();
 
-    console.log(data);
-
     return NextResponse.json(
       {
         success: true,
@@ -143,11 +166,11 @@ export async function GET(req: NextRequest) {
       },
       { status: 200 },
     );
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
     return NextResponse.json(
       {
         error: "Failed to load booking: Server error",
+        err,
       },
       { status: 500 },
     );

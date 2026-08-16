@@ -13,16 +13,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { icon: LayoutDashboard, label: "Dashboard", link: "/admin" },
-  { icon: CalendarDays, label: "Bookings", link: "/admin/bookings" },
-  { icon: Users, label: "Teams", link: "/admin/teams" },
-  { icon: Clock3, label: "Schedules", link: "/admin/schedules" },
+  { icon: LayoutDashboard, label: "Dashboard", link: "/dashboard" },
+  { icon: CalendarDays, label: "Bookings", link: "/dashboard/bookings" },
+  { icon: Users, label: "Teams", link: "/dashboard/teams" },
+  { icon: Clock3, label: "Schedules", link: "/dashboard/schedules" },
 ];
 
 const secondary_links = [
-  { icon: CreditCard, label: "Payments", link: "/admin/payments" },
-  { icon: FileBarChart2, label: "Reports", link: "/admin/reports" },
-  { icon: Settings, label: "Settings", link: "/admin/settings" },
+  { icon: CreditCard, label: "Payments", link: "/dashboard/payments" },
+  { icon: FileBarChart2, label: "Reports", link: "/dashboard/reports" },
+  { icon: Settings, label: "Settings", link: "/dashboard/settings" },
 ];
 
 export function Sidebar() {
@@ -30,7 +30,9 @@ export function Sidebar() {
 
   return (
     <aside className="flex w-72 flex-col bg-[#062E1D] text-white">
-      <Link href="/admin" className="p-8 border-b border-b-slate-100/10 mb-5">
+      <Link
+        href="/dashboard"
+        className="p-8 border-b border-b-slate-100/10 mb-5">
         <Image src="/images/logo.png" alt="logo" width={180} height={100} />
       </Link>
       <div className="flex-1">

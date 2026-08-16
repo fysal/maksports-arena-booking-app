@@ -9,12 +9,51 @@ import {
   loadTeamInformaition,
   logoutUser,
 } from "@/app/lib/firebase/auth";
-import { LogOut, CircleUser, Users, CalendarDays } from "lucide-react";
+import {
+  LogOut,
+  CircleUser,
+  Users,
+  CalendarDays,
+  LayoutDashboard,
+  Clock3,
+  CreditCard,
+  FileBarChart2,
+  Settings,
+  CircleDollarSign,
+} from "lucide-react";
+
+
+  const iconSize = 16;
+
+export   const adminMenu = [
+  {
+    icon: <LayoutDashboard size={iconSize} />,
+    name: "Dashboard",
+    link: "/dashboard",
+  },
+  {
+    icon: <CalendarDays size={iconSize} />,
+    name: "Bookings",
+    link: "/dashboard/bookings",
+  },
+  {
+    icon: <Users size={iconSize} />,
+    name: "Teams",
+    link: "/dashboard/teams",
+  },
+  {
+    icon: <Clock3 size={iconSize} />,
+    name: "Schedules",
+    link: "/dashboard/schedules",
+  },
+  { icon: <CircleDollarSign size={iconSize} />, name: "Payments", link: "#" },
+  { icon: <Settings size={iconSize} />, name: "Settings", link: "#" },
+];
+
 
 const Navbar = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const { teamInformation, setTeamInformation } = useContext(TeamContenxt);
-  const iconSize = 16;
   const userMenu = [
     {
       name: "My Account",
@@ -23,15 +62,12 @@ const Navbar = () => {
     },
     {
       name: "Manage Team",
-      link: "/manage-team",
+      link: "/team-management",
       icon: <Users size={iconSize} />,
     },
-    {
-      name: "Schedules",
-      link: "/schedules",
-      icon: <CalendarDays size={iconSize} />,
-    },
   ];
+
+
 
   async function fetchTeamInformation(uid: string) {
     const result: any = await loadTeamInformaition(uid);
@@ -101,7 +137,10 @@ const Navbar = () => {
               <ul
                 tabIndex={-1}
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                {userMenu.map((item, idx: number) => (
+                {(currentUser.accountType === "admin"
+                  ? adminMenu
+                  : userMenu
+                ).map((item, idx: number) => (
                   <li key={idx}>
                     <Link
                       href={item.link}

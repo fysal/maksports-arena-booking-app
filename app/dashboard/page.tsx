@@ -1,7 +1,7 @@
-import { DashboardHeader } from "@/app/admin/components/DashboardHeader";
-import { TodaySchedule } from "@/app/admin/components/TodaySchedule";
-import { RecentBookings } from "@/app/admin/components/RecentBookings";
-import { QuickActions } from "@/app/admin/components/QuickAction";
+import { DashboardHeader } from "@/app/dashboard/components/DashboardHeader";
+import { TodaySchedule } from "@/app/dashboard/components/TodaySchedule";
+import { RecentBookings } from "@/app/dashboard/components/RecentBookings";
+import { QuickActions } from "@/app/dashboard/components/QuickAction";
 import { StatsOverview } from "./components/StatCardGrid";
 import { BookingTrends } from "./components/BookingTrendChart";
 
@@ -13,8 +13,12 @@ export default function AdminDashboard() {
 
         <div className="mt-8 space-y-6">
           <div>
-            <h1 className="font-bold text-3xl">Welcome back, Administrator 👋</h1>
-            <p className="text-md text-slate-500">Here is what is happening at Mak Sports Arena</p>
+            <h1 className="font-bold text-3xl">
+              Welcome back, Administrator 👋
+            </h1>
+            <p className="text-md text-slate-500">
+              Here is what is happening at Mak Sports Arena
+            </p>
           </div>
           <StatsOverview />
 

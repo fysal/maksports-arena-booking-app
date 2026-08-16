@@ -130,6 +130,9 @@ export async function checkCurrentUserExists(
         setCurrentUser({
           provider: usr.providerId,
           photoUrl: usr.photoURL,
+          isAnonymous: usr.isAnonymous,
+          refreshToken: usr.refreshToken,
+          emailVerified: usr.emailVerified,
           ...profile,
         });
       }

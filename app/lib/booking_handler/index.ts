@@ -1,7 +1,8 @@
-import { slotBookingType } from "../types";
+import { BookingType, slotBookingType } from "@/app/types/booking";
 
 export default class BookingHandler {
-  static async bookSlot(payload: slotBookingType) {
+
+  static async bookSlot(payload: BookingType) {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/booking`,

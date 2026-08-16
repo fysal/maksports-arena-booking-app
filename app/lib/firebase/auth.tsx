@@ -9,14 +9,12 @@ import { auth, db } from "./client";
 import {
   collection,
   doc,
-  getDoc,
   getDocs,
   onSnapshot,
   query,
   setDoc,
   where,
 } from "firebase/firestore";
-import crypto from "crypto";
 import { toast } from "react-toastify";
 import { generateRandomIds } from "../utils/utils";
 
@@ -77,7 +75,7 @@ export async function logoutUser() {
 export async function createTeamProfile(data: registerTeamInfo, uid: string) {
   try {
     const { teamName } = data;
-    const id = generateRandomIds(); 
+    const id = generateRandomIds();
     await setDoc(doc(db, "teams", id), {
       teamName,
       id,
@@ -144,10 +142,7 @@ export async function checkCurrentUserExists(
 
 export async function loadTeamInformaition(uid: string) {
   try {
-    const teamsQuery = query(
-      collection(db, "teams"),
-      where("uid", "==", uid),
-    );
+    const teamsQuery = query(collection(db, "teams"), where("uid", "==", uid));
     const querySnapshot = await getDocs(teamsQuery);
 
     if (querySnapshot.empty) return null;

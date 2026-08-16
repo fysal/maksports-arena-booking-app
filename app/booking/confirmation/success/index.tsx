@@ -36,8 +36,6 @@ export default function BookingSuccessPage({
   const [showContent, setShowContent] = useState(false);
   const [showPopConfetti, setShowPopConfetti] = useState(true);
 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
   const { currentUser } = useContext(UserContext);
 
   /*
@@ -92,13 +90,6 @@ export default function BookingSuccessPage({
     };
   }, []);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (currentUser) setIsLoggedIn(true);
-    }, 0);
-    return () => clearTimeout(timeout);
-  }, [currentUser]);
-
   function playAudio() {
     try {
       const audio = new Audio("/audio/success.mp3");
@@ -113,7 +104,7 @@ export default function BookingSuccessPage({
   }
   //Play success sound
   useEffect(() => {
- playAudio();
+    playAudio();
   }, []);
 
   /*
@@ -202,15 +193,7 @@ export default function BookingSuccessPage({
 
       <div className="pointer-events-none absolute -right-40 top-1/2 h-96 w-96 rounded-full bg-lime-200/20 blur-3xl" />
 
-      {/* ========================================================= */}
-      {/* PAGE CONTENT */}
-      {/* ========================================================= */}
-
       <div className="relative z-10 mx-auto max-w-5xl px-6 py-12 md:py-20">
-        {/* ======================================================= */}
-        {/* SUCCESS HERO */}
-        {/* ======================================================= */}
-
         <div
           className={`text-center transition-all duration-1000 ${
             showContent
@@ -472,7 +455,7 @@ export default function BookingSuccessPage({
               ? "translate-y-0 opacity-100"
               : "translate-y-8 opacity-0"
           }`}>
-          {booking.uid !==" " && (
+          {booking.uid !== " " && (
             <Link
               href="/team-management"
               className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-7 py-4 font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
@@ -483,7 +466,6 @@ export default function BookingSuccessPage({
 
           <button
             type="button"
-            
             className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-4 font-semibold text-slate-700 shadow-sm transition hover:-translate-y-1 hover:bg-slate-50">
             <Share2 className="h-5 w-5" />
             Share Booking

@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { currentUserType } from "./lib/types";
 import { TeamContenxt, UserContext } from "./lib/context";
 import { ToastContainer } from "react-toastify";
 import { Team } from "./types/team";
+import { currentUserType } from "./types/user";
 export default function MainLayoutDecorator({
   children,
 }: {

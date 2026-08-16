@@ -22,10 +22,9 @@ import {
   CircleDollarSign,
 } from "lucide-react";
 
+const iconSize = 16;
 
-  const iconSize = 16;
-
-export   const adminMenu = [
+export const adminMenu = [
   {
     icon: <LayoutDashboard size={iconSize} />,
     name: "Dashboard",
@@ -50,7 +49,6 @@ export   const adminMenu = [
   { icon: <Settings size={iconSize} />, name: "Settings", link: "#" },
 ];
 
-
 const Navbar = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const { teamInformation, setTeamInformation } = useContext(TeamContenxt);
@@ -66,8 +64,6 @@ const Navbar = () => {
       icon: <Users size={iconSize} />,
     },
   ];
-
-
 
   async function fetchTeamInformation(uid: string) {
     const result: any = await loadTeamInformaition(uid);

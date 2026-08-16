@@ -1,11 +1,7 @@
+import { TeamMember } from "@/app/types/booking";
 import { Mail, MoreHorizontal, Phone } from "lucide-react";
-import { TeamMember } from "../page";
 
-export default function MemberCard({
-  member,
-}: {
-  member: TeamMember;
-}) {
+export default function MemberCard({ member }: { member: TeamMember }) {
   return (
     <div className="group rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-green-200 hover:shadow-lg">
       <div className="flex items-center gap-4">
@@ -15,9 +11,7 @@ export default function MemberCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="truncate font-bold text-slate-900">
-              {member.name}
-            </h3>
+            <h3 className="truncate font-bold text-slate-900">{member.name}</h3>
 
             {member.captain && (
               <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-700">
@@ -26,15 +20,12 @@ export default function MemberCard({
             )}
           </div>
 
-          <p className="mt-1 text-sm text-slate-400">
-            {member.role}
-          </p>
+          <p className="mt-1 text-sm text-slate-400">{member.role}</p>
         </div>
 
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-50 hover:text-slate-900"
-        >
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-50 hover:text-slate-900">
           <MoreHorizontal className="h-5 w-5" />
         </button>
       </div>

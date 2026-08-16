@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req : NextRequest){
+export async function GET(){
 
 }
 
-export async function POST(req: NextRequest, res:NextResponse){
+export async function POST(){
 
 }

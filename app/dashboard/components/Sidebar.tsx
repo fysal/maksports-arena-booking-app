@@ -33,7 +33,13 @@ export function Sidebar() {
       <Link
         href="/dashboard"
         className="p-8 border-b border-b-slate-100/10 mb-5">
-        <Image src="/images/logo.png" alt="logo" width={180} height={100} />
+        <Image
+          src="/images/logo.png"
+          alt="logo"
+          width={180}
+          height={100}
+          className="w-[150px] h-auto"
+        />
       </Link>
       <div className="flex-1">
         <nav className="px-4">

@@ -15,9 +15,9 @@ export default function WithUserRoutes(Component: any) {
     useEffect(() => {
       if (typeof currentUser === "undefined")
         checkCurrentUserExists(setCurrentUser);
-    }, []);
+    });
 
-    if (typeof currentUser === "undefined") return <PageLoading/>;
+    if (typeof currentUser === "undefined") return <PageLoading />;
     else if (currentUser === null || currentUser.isAnonymous)
       //redirect to login
       router.replace("/auth?act=login");

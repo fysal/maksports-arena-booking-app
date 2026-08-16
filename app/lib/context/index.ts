@@ -1,7 +1,7 @@
 import { createContext } from "react";
-import { currentUserType } from "../types";
 import { Team } from "@/app/types/team";
-import { Booking } from "@/app/types/booking";
+import { BookingType } from "@/app/types/booking";
+import { currentUserType } from "@/app/types/user";
 
 type userContextType = {
   currentUser: currentUserType | undefined | null;
@@ -24,13 +24,12 @@ export const TeamContenxt = createContext<teamContextType>({
   setTeamInformation: () => {},
 });
 
-
 type bookingsContextType = {
-  bookings: Booking[],
-  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
-}
+  bookings: BookingType[];
+  setBookings: React.Dispatch<React.SetStateAction<BookingType[]>>;
+};
 
 export const BookingsContext = createContext<bookingsContextType>({
   bookings: [],
-  setBookings: () => { }
+  setBookings: () => {},
 });

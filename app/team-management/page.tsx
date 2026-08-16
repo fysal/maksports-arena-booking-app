@@ -7,25 +7,19 @@ import {
   CalendarDays,
   CheckCircle2,
   ChevronRight,
-  Clock3,
   Edit3,
   Mail,
   MapPin,
-  MoreHorizontal,
   Phone,
   Plus,
-  ShieldCheck,
-  Trophy,
   UserPlus,
   Users,
   X,
 } from "lucide-react";
-import ProtectionBadge from "./components/ProtectionBadge";
 import SectionHeader from "./components/SectionHeader";
 import TeamStat from "./components/TeamStat";
 import MemberCard from "./components/MemberCard";
 import ScheduleRow from "./components/ScheduleRow";
-import StatusBadge from "./components/StatusBadge";
 import BookingCard from "./components/BookingCard";
 import { BookingsContext, TeamContenxt, UserContext } from "../lib/context";
 import { BookingType, TeamMember } from "../types/booking";
@@ -99,8 +93,8 @@ export default function TeamManagementPage() {
   const upcomingBookings = useMemo(() => {
     return bookings.filter(
       (booking) =>
-        (booking.status.toLowerCase() === "confirmed" ||
-          booking.status.toLowerCase() === "pending") &&
+        (booking?.status?.toLowerCase() === "confirmed" ||
+          booking?.status?.toLowerCase() === "pending") &&
         new Date(booking.date).getTime() > now,
     );
   }, [bookings, now]);
@@ -108,11 +102,10 @@ export default function TeamManagementPage() {
   const completedBookings = useMemo(
     () =>
       bookings.filter(
-        (booking) => booking.status.toLowerCase() === "completed",
+        (booking) => booking?.status?.toLowerCase() === "completed",
       ),
     [bookings],
   );
-
 
   return (
     <main className="min-h-screen bg-[#f7faf8]">
@@ -374,9 +367,14 @@ export default function TeamManagementPage() {
 
             <div className="mt-5 overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-sm">
               <div className="divide-y divide-slate-100">
-                {bookings.sort((a,b) => b.date.localeCompare(a.date)).map((booking) => (
-                  <ScheduleRow key={booking.id} booking={booking} />
-                ))}
+                {[...bookings]
+                  .sort(
+                    (a: BookingType, b: BookingType) =>
+                      new Date(b.date).getTime() - new Date(a.date).getTime(),
+                  )
+                  .map((booking: BookingType) => (
+                    <ScheduleRow key={booking.bookingId} booking={booking} />
+                  ))}
               </div>
             </div>
           </section>

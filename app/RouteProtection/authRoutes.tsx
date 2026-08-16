@@ -17,7 +17,7 @@ const WithAuthRoutes = (Component: any) => {
       if (typeof currentUser === "undefined") {
         checkCurrentUserExists(setCurrentUser);
       }
-    }, []);
+    });
 
     if (typeof currentUser === "undefined") return <PageLoading />;
 

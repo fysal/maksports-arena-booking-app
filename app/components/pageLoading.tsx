@@ -31,7 +31,7 @@ export default function PageLoading() {
         {/* Brand */}
         <div className="mt-8 text-center">
           <h1 className="text-xl font-black tracking-tight text-slate-900">
-            Maksports
+            Mak Sports
             <span className="text-green-600"> Arena</span>
           </h1>
 

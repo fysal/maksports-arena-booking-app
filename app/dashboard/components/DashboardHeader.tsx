@@ -30,8 +30,10 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Link href="/" className="text-sm flex items-center">
-          <ArrowLeft /> <span>Go home</span>
+        <Link
+          href="/"
+          className="text-sm flex items-center hover:bg-slate-200 p-2 rounded">
+          <ArrowLeft size={13} /> <span>Go Home</span>
         </Link>
         <button className="flex h-12 items-center gap-2 rounded-lg border border-slate-200 text-sm bg-white px-4">
           <Calendar size={15} />

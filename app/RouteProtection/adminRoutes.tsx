@@ -16,7 +16,7 @@ const WithAdminRoutes = (Component: any) => {
     });
 
     if (typeof currentUser === "undefined") return <PageLoading />;
-    else if (currentUser === null || currentUser.isAnonymous)
+    else if (currentUser === null || currentUser?.isAnonymous)
       return router.replace("/");
     else if (currentUser && currentUser.accountType === "customer")
       return router.push("/team-management");

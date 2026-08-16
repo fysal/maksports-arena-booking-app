@@ -12,9 +12,7 @@ export interface UserProfile {
   refreshToken?: string;
   emailVerified?: boolean;
   accountType: UserRole;
-
 }
-
 
 export type currentUserType = {
   uid: string;
@@ -24,5 +22,10 @@ export type currentUserType = {
   accountType: UserRole;
   photoUrl: string;
   email: string;
+  role: UserRole;
+  teamId?: string;
+  createdAt: string;
+  isAnonymous: boolean;
+  refreshToken?: string;
+  emailVerified?: boolean;
 };
-

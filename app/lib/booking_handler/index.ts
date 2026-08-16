@@ -1,7 +1,6 @@
-import { BookingType, slotBookingType } from "@/app/types/booking";
+import { BookingType } from "@/app/types/booking";
 
 export default class BookingHandler {
-
   static async bookSlot(payload: BookingType) {
     try {
       const response = await fetch(

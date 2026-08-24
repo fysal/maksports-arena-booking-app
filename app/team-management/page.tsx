@@ -72,7 +72,9 @@ export default function TeamManagementPage() {
   >("overview");
 
   const [showInvite, setShowInvite] = useState(false);
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Date.now()); 
+
+  
   const { bookings } = useContext(BookingsContext);
 
   const { teamInformation: team } = useContext(TeamContenxt);

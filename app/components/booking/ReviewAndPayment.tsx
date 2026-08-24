@@ -141,7 +141,7 @@ const ReviewAndPayment = ({
                   <p className="text-sm text-muted-foreground">N.O Players</p>
 
                   <p className="slot-label capitalize font-medium">
-                    {booking.numberOfPlayers} players
+                    {booking.number_of_players} players
                   </p>
                 </div>
               </div>

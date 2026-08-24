@@ -15,7 +15,7 @@ export type BookingType = {
   contactInformation: ContactPerson;
   teamMembers?: number;
   fee: number;
-  numberOfPlayers: number;
+  number_of_players: number;
 };
 
 export type slotBookingType = {
@@ -27,7 +27,7 @@ export type slotBookingType = {
   contactPerson: string;
   phone: string;
   email: string;
-  numberOfPlayers: number;
+  number_of_players: number;
   notes?: string;
   startTime?: string;
   endTime?: string;

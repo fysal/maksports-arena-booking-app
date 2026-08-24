@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   CalendarDays,
@@ -23,6 +23,9 @@ import ScheduleRow from "./components/ScheduleRow";
 import BookingCard from "./components/BookingCard";
 import { BookingsContext, TeamContenxt, UserContext } from "../lib/context";
 import { BookingType, TeamMember } from "../types/booking";
+import Drawer from "../components/Drawer";
+import EditTeamDrawer from "../components/DrawerInner";
+import QuickAction from "./components/QuickAction";
 
 const members: TeamMember[] = [
   {
@@ -76,6 +79,8 @@ export default function TeamManagementPage() {
 
   const { currentUser } = useContext(UserContext);
 
+  const ref = useRef<HTMLInputElement>(null);
+
   const tabs = [
     {
       id: "overview",
@@ -85,11 +90,17 @@ export default function TeamManagementPage() {
       id: "schedule",
       label: "Schedule",
     },
-    {
-      id: "members",
-      label: "Team Members",
-    },
+    // {
+    //   id: "members",
+    //   label: "Team Members",
+    // },
   ];
+
+  function toggleDrawer() {
+    //toggle daisyui drawer
+    if (ref.current !== null) ref.current.checked = !ref.current.checked;
+  }
+
   const upcomingBookings = useMemo(() => {
     return bookings.filter(
       (booking) =>
@@ -108,11 +119,13 @@ export default function TeamManagementPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#f7faf8]">
-      {/* ======================================================= */}
-      {/* HEADER */}
-      {/* ======================================================= */}
-
+    <main className="min-h-screen bg-[#f7faf8]  drawer drawer-end">
+      <input
+        ref={ref}
+        id="dashboard-drawer"
+        type="checkbox"
+        className="drawer-toggle"
+      />
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-6 py-5 lg:px-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -148,15 +161,7 @@ export default function TeamManagementPage() {
         </div>
       </header>
 
-      {/* ======================================================= */}
-      {/* CONTENT */}
-      {/* ======================================================= */}
-
-      <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-        {/* ===================================================== */}
-        {/* TEAM HERO */}
-        {/* ===================================================== */}
-
+      <div className="mx-auto w-full max-w-7xl px-6 py-8 lg:px-8">
         <section className="relative overflow-hidden rounded-[30px] bg-slate-950 p-6 text-white shadow-xl md:p-8">
           {/* Background decoration */}
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-green-500/20 blur-3xl" />
@@ -167,7 +172,7 @@ export default function TeamManagementPage() {
             <div className="flex items-center gap-5">
               {/* Team logo */}
               <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[24px] bg-gradient-to-br from-green-400 to-green-600 text-2xl font-black text-white shadow-lg shadow-green-500/20 uppercase">
-                {team?.teamName.substring(0, 2)}
+                {team?.shortName ?? team?.teamName.substring(0, 2) ?? "TM"}
               </div>
 
               <div>
@@ -198,7 +203,7 @@ export default function TeamManagementPage() {
 
                   <span className="flex items-center gap-1.5">
                     <Users className="h-4 w-4" />
-                    {members.length} members
+                    {team?.number_of_players} members
                   </span>
                 </div>
               </div>
@@ -206,8 +211,9 @@ export default function TeamManagementPage() {
 
             <button
               type="button"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
-              <Edit3 className="h-4 w-4" />
+              onClick={toggleDrawer}
+              className=" inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+              <Edit3 className="h-4 w-4 " />
               Edit Team
             </button>
           </div>
@@ -235,7 +241,7 @@ export default function TeamManagementPage() {
                 onClick={() =>
                   setActiveTab(tab.id as "overview" | "schedule" | "members")
                 }
-                className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition ${
+                className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition cursor-pointer ${
                   activeTab === tab.id
                     ? "bg-slate-950 text-white shadow-sm"
                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
@@ -300,29 +306,33 @@ export default function TeamManagementPage() {
 
                   <button
                     type="button"
-                    onClick={() => setShowInvite(true)}
-                    className="flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-slate-50">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600">
-                      <UserPlus className="h-5 w-5" />
+                    onClick={toggleDrawer}
+                    className="flex w-full items-center group cursor-pointer justify-between gap-3 rounded-xl p-3 text-left transition hover:bg-slate-50">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white w-5  transitione">
+                        <Edit3 className="h-5  " />
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">
+                          Edit Team
+                        </p>
+
+                        <p className="text-xs text-slate-400">
+                          Update team information
+                        </p>
+                      </div>
                     </div>
 
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">
-                        Add Member
-                      </p>
-
-                      <p className="text-xs text-slate-400">
-                        Invite a teammate
-                      </p>
-                    </div>
+                    <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-green-600" />
                   </button>
 
-                  <QuickAction
-                    icon={<Edit3 />}
-                    title="Edit Team"
-                    description="Update team information"
+                  {/* <QuickAction
+                    icon={<UserPlus />}
+                    title="Add Member"
+                    description="Invite a teammate"
                     href="#"
-                  />
+                  /> */}
                 </div>
               </div>
 
@@ -469,57 +479,17 @@ export default function TeamManagementPage() {
           </div>
         </div>
       )}
+      {team && currentUser && (
+        <Drawer
+          Component={
+            <EditTeamDrawer
+              currentUser={currentUser!}
+              toggleDrawer={toggleDrawer}
+            />
+          }
+        />
+      )}
     </main>
-  );
-}
-
-/* ============================================================= */
-/* BOOKING CARD */
-/* ============================================================= */
-
-/* ============================================================= */
-/* SCHEDULE ROW */
-/* ============================================================= */
-
-/* ============================================================= */
-/* STATUS */
-/* ============================================================= */
-
-/* ============================================================= */
-/* MEMBER CARD */
-/* ============================================================= */
-
-/* ============================================================= */
-/* QUICK ACTION */
-/* ============================================================= */
-
-function QuickAction({
-  icon,
-  title,
-  description,
-  href,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  href: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-3 rounded-xl p-3 transition hover:bg-slate-50">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600 transition group-hover:bg-green-600 group-hover:text-white">
-        {icon}
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-slate-900">{title}</p>
-
-        <p className="text-xs text-slate-400">{description}</p>
-      </div>
-
-      <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-green-600" />
-    </Link>
   );
 }
 

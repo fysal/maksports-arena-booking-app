@@ -50,7 +50,7 @@ export default function BookPage() {
     contactPerson: currentUser?.name ?? "",
     phone: currentUser?.phoneNumber ?? "",
     email: currentUser?.email ?? "",
-    numberOfPlayers: 0,
+    number_of_players: 0,
     notes: "",
   });
   const tabs = ["date & time", "Information", "Review & Payment"];
@@ -89,11 +89,14 @@ export default function BookPage() {
         phone: currentUser?.phoneNumber ?? "",
         email: currentUser?.email ?? "",
         teamId: teamInformation?.id,
+        number_of_players: Number(teamInformation?.number_of_players) ?? 0,
       }));
     }, 0);
     return () => clearTimeout(timeout);
   }, [currentUser, teamInformation]);
 
+
+  console.log(teamInformation)
   const captureFormData = (_data: BookingFormData | unknown | any) => {
     setTeamInfo({ ..._data });
     handleNext();
@@ -127,7 +130,7 @@ export default function BookPage() {
       date: date!,
       startTime: selectedSlot!.startTime,
       endTime: selectedSlot!.endTime,
-      numberOfPlayers: teamInfo.numberOfPlayers,
+      number_of_players: teamInfo.number_of_players ?? 0,
       createdBy: currentUser?.uid ?? "anonymous",
       uid: currentUser?.uid ?? " ",
       contactInformation: {

@@ -1,8 +1,20 @@
-import { Clock3, MapPin, MoreHorizontal } from "lucide-react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+import { Clock3, MapPin, Minus, MoreHorizontal, Plus } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import { BookingType } from "@/app/types/booking";
+import { useEffect, useState } from "react";
 
 export default function BookingCard({ booking }: { booking: BookingType }) {
+  const details = {
+    "Booking id": booking.bookingId,
+    fee: booking.fee.toLocaleString() + " UGX",
+    players: booking.number_of_players,
+    "Match Day": new Date(booking?.date).toDateString(),
+  };
+
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+
   return (
     <div className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-green-200 hover:shadow-lg">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -57,9 +69,36 @@ export default function BookingCard({ booking }: { booking: BookingType }) {
 
         <button
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-400 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
-          <MoreHorizontal className="h-5 w-5" />
+          onClick={() => setShowDetails((prev) => !prev)}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-400 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 cursor-pointer">
+          {!showDetails ? (
+            <Plus className="h-5 w-5" />
+          ) : (
+            <Minus className="h-5 w-5" />
+          )}
         </button>
+      </div>
+      <div
+        className={`
+  overflow-hidden rounded-xl
+  transition-all duration-300 ease-in-out
+  ${
+    showDetails
+      ? "max-h-[600px] opacity-100 mt-3 border border-slate-200 bg-slate-50 p-4"
+      : "max-h-0 opacity-0 mt-0 border-transparent p-0 shadow-none"
+  }
+`}>
+        <h3 className="font-bold text-slate-600 text-lg mb-2">Details</h3>
+        <div>
+          {(Object.keys(details) as (keyof typeof details)[]).map((key) => (
+            <div
+              key={key}
+              className="grid grid-cols-4 py-2 border-b border-slate-200">
+              <div className="capitalize font-medium">{key}:</div>
+              <div className="font-medium">{details[key]}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

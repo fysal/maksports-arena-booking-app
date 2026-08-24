@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { generateRandomIds } from "../utils/utils";
+import { redirect } from "next/navigation";
 
 type registerTeamInfo = {
   teamName: string;
@@ -62,16 +63,6 @@ export async function loginUser(email: string, password: string) {
   }
 }
 
-export async function logoutUser() {
-  try {
-    await signOut(auth);
-    toast.success("You've logged out");
-  } catch (error) {
-    console.log(error);
-    toast.error("Failed to logout");
-  }
-}
-
 export async function createTeamProfile(data: registerTeamInfo, uid: string) {
   try {
     const { teamName } = data;
@@ -103,20 +94,6 @@ export async function createProfile(uid: string, formData: registerTeamInfo) {
   }
 }
 
-export async function loadUserProfile(uid: string) {
-  try {
-    const result = await new Promise((resolve) => {
-      onSnapshot(doc(db, "profiles", uid), (doc) => {
-        resolve(doc.data());
-      });
-    });
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
-}
-
 export async function checkCurrentUserExists(
   setCurrentUser: React.Dispatch<React.SetStateAction<any>>,
 ) {
@@ -140,6 +117,22 @@ export async function checkCurrentUserExists(
   }
 }
 
+export async function loadUserProfile(uid: string) {
+  try {
+    const result = await new Promise((resolve) => {
+      onSnapshot(doc(db, "profiles", uid), (doc) => {
+        resolve(doc.data());
+      });
+    });
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
 export async function loadTeamInformaition(uid: string) {
   try {
     const teamsQuery = query(collection(db, "teams"), where("uid", "==", uid));
@@ -150,5 +143,15 @@ export async function loadTeamInformaition(uid: string) {
   } catch (error) {
     console.log(error);
     throw error;
+  }
+}
+
+export async function logoutUser() {
+  try {
+    await signOut(auth);
+    toast.success("You've logged out");
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to logout");
   }
 }

@@ -22,6 +22,7 @@ export type currentUserType = {
   accountType: UserRole;
   photoUrl: string;
   email: string;
+  provider: string;
   role: UserRole;
   teamId?: string;
   createdAt: string;

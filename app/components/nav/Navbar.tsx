@@ -11,13 +11,10 @@ import {
 } from "@/app/lib/firebase/auth";
 import {
   LogOut,
-  CircleUser,
   Users,
   CalendarDays,
   LayoutDashboard,
   Clock3,
-  CreditCard,
-  FileBarChart2,
   Settings,
   CircleDollarSign,
 } from "lucide-react";
@@ -48,22 +45,22 @@ export const adminMenu = [
   { icon: <CircleDollarSign size={iconSize} />, name: "Payments", link: "#" },
   { icon: <Settings size={iconSize} />, name: "Settings", link: "#" },
 ];
+const userMenu = [
+  // {
+  //   name: "My Account",
+  //   link: "/",
+  //   icon: <CircleUser size={iconSize} />,
+  // },
+  {
+    name: "Manage Team",
+    link: "/team-management",
+    icon: <Users size={iconSize} />,
+  },
+];
 
 const Navbar = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const { teamInformation, setTeamInformation } = useContext(TeamContenxt);
-  const userMenu = [
-    {
-      name: "My Account",
-      link: "/",
-      icon: <CircleUser size={iconSize} />,
-    },
-    {
-      name: "Manage Team",
-      link: "/team-management",
-      icon: <Users size={iconSize} />,
-    },
-  ];
 
   async function fetchTeamInformation(uid: string) {
     const result: any = await loadTeamInformaition(uid);
@@ -80,6 +77,7 @@ const Navbar = () => {
 
   async function signout() {
     await logoutUser();
+    window.location.reload();
   }
 
   useEffect(() => {

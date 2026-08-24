@@ -7,9 +7,8 @@ export interface BookingFormData {
   contactPerson: string;
   phone: string;
   email: string;
-  numberOfPlayers: number;
+  number_of_players?: number;
   notes?: string;
-  
 }
 
 interface BookingFormProps {
@@ -143,16 +142,15 @@ export default function BookingForm({
           type="number"
           min={5}
           max={30}
-          {...register("numberOfPlayers", {
+          {...register("number_of_players", {
             required: "Number of players is required",
-            valueAsNumber: true,
           })}
           className="w-full rounded-lg border px-4 py-3 outline-none transition focus:border-black"
         />
 
-        {errors.numberOfPlayers && (
+        {errors.number_of_players && (
           <p className="mt-1 text-sm text-red-500">
-            {errors.numberOfPlayers.message}
+            {errors.number_of_players.message}
           </p>
         )}
       </div>

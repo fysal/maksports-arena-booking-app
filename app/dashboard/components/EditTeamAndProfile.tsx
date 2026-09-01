@@ -12,14 +12,13 @@ import {
   UsersRound,
   User,
 } from "lucide-react";
-import { currentUserType } from "../types/user";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext } from "react";
-import { loadTeamInformaition } from "../lib/firebase/auth";
-import { TeamContenxt } from "../lib/context";
 import { toast } from "react-toastify";
+import { UserProfile } from "@/app/types/user";
+import { Team } from "@/app/types/team";
+import { Input, SectionLabel } from "@/app/components/DrawerInner";
 
 const schema = z.object({
   name: z.string().min(4, {
@@ -28,35 +27,40 @@ const schema = z.object({
   teamName: z.string().min(2, { message: "Team name is required" }),
   email: z.email(),
   phoneNumber: z.string().min(12, { message: "Enter a valid phone number" }),
-  shortName: z.string().min(2, {
-    message: "Short name is required",
-  }).max(2,{message:"Only 2 letters allowed"}),
-  number_of_players: z.string().min(1, { message:"Enter number of team members" }),
+  shortName: z
+    .string()
+    .min(2, {
+      message: "Short name is required",
+    })
+    .max(2, { message: "Only 2 letters allowed" }),
+  number_of_players: z
+    .string()
+    .min(1, { message: "Enter number of team members" }),
   description: z.string(),
+  status: z.boolean(),
 });
 
 type formDataType = z.infer<typeof schema>;
 
-export default function EditTeamDrawer({
+export default function EditTeamAndProfile({
   toggleDrawer,
-  currentUser,
+  profile,
+  team,
 }: {
   toggleDrawer: () => void;
-  currentUser: currentUserType;
+  profile: UserProfile | null;
+  team: Team | null;
 }) {
-  const { teamInformation: team, setTeamInformation } =
-    useContext(TeamContenxt);
-
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors, isSubmitSuccessful },
   } = useForm<formDataType>({
     defaultValues: {
-      name: currentUser.name ?? "",
+      name: profile?.name ?? "",
       teamName: team?.teamName ?? "",
-      email: currentUser.email ?? "",
-      phoneNumber: currentUser.phoneNumber ?? "",
+      email: profile?.email ?? "",
+      phoneNumber: profile?.phoneNumber ?? "",
       shortName: team?.shortName ?? "",
       number_of_players: String(team?.number_of_players ?? ""),
       description: team?.description ?? "",
@@ -75,12 +79,11 @@ export default function EditTeamDrawer({
         body: JSON.stringify({
           ...formData,
           id: team?.id,
-          uid: currentUser.uid,
+          uid: profile?.uid,
+          status: formData.status === true ? "blocked" : "active",
         }),
       });
-
-      const result: any = await loadTeamInformaition(currentUser.uid);
-      setTeamInformation(result);
+      toggleDrawer();
     } catch (error: any) {
       toast.error(error);
     }
@@ -310,7 +313,7 @@ export default function EditTeamDrawer({
                 <Input
                   label="Team Email"
                   useformProps={{ ...register("email") }}
-                  disabled={isSubmitting || currentUser.provider === "firebase"}
+                  disabled={isSubmitting}
                   type="email"
                   placeholder="team@example.com"
                   icon={<Mail />}
@@ -341,14 +344,35 @@ export default function EditTeamDrawer({
 
                 <div>
                   <p className="text-sm font-bold text-slate-900">
-                    Your information is secure
+                    This information is secure
                   </p>
 
                   <p className="mt-1 text-xs leading-5 text-slate-500">
-                    Team information is only used to manage your Maksports
-                    account, bookings and communications.
+                    Team information is used to manage Mak sports account,
+                    bookings and communications.
                   </p>
                 </div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-orange-200 p-4 bg-orange-100/50">
+              <p className="text-sm font-bold text-slate-900">Account Status</p>
+              <div className="flex items-center gap-4 mt-3">
+                <input
+                  {...register("status")}
+                  id="account-status"
+                  className="checkbox rounded bg-orange-200 cursor-pointer"
+                  type="checkbox"
+                  defaultChecked={
+                    profile?.status?.toLowerCase() === "active" ? false : true
+                  }
+                />
+                <label
+                  htmlFor="account-status"
+                  className="cursor-pointer capitalize">
+                  {profile?.status === "active"
+                    ? "Block Account"
+                    : "unblocked account "}
+                </label>
               </div>
             </div>
           </div>
@@ -421,95 +445,5 @@ export default function EditTeamDrawer({
         </div>
       </aside>
     </form>
-  );
-}
-
-/* ============================================================= */
-/* SECTION LABEL */
-/* ============================================================= */
-
-export function SectionLabel({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div>
-      <h3 className="text-base font-black text-slate-900">{title}</h3>
-
-      <p className="mt-1 text-sm text-slate-500">{description}</p>
-    </div>
-  );
-}
-
-/* ============================================================= */
-/* INPUT */
-/* ============================================================= */
-
-export function Input({
-  label,
-  placeholder,
-  icon,
-  type = "text",
-  maxLength,
-  minLength,
-  useformProps,
-  error,
-  disabled,
-}: {
-  label: string;
-  placeholder: string;
-  icon: React.ReactNode;
-  type?: string;
-  maxLength?: number;
-  minLength?: number;
-  useformProps: any;
-  error?: any;
-  disabled?: boolean;
-}) {
-  return (
-    <div>
-      <label className="mb-2 block text-sm font-semibold text-slate-700">
-        {label}
-      </label>
-
-      <div className="relative">
-        <div className="pointer-events-none absolute left-4 top-1/2 flex -translate-y-1/2 items-center text-slate-400">
-          {icon}
-        </div>
-
-        <input
-          {...useformProps}
-          type={type}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          minLength={minLength}
-          disabled={disabled}
-          className={`
-            w-full
-            rounded-xl
-            border
-            border-slate-200
-            bg-slate-50
-            py-3
-            pl-11
-            pr-4
-            text-sm
-            text-slate-700
-            outline-none
-            transition
-            placeholder:text-slate-400
-             focus:bg-white focus:ring-4 focus:ring-green-500/10
-            ${error ? "border-red-500 focus:border-red-500" : " focus:border-green-500"}
-           
-          `}
-        />
-      </div>
-      {error && (
-        <div className="text-sm text-red-600 my-2">{error.message}</div>
-      )}
-    </div>
   );
 }

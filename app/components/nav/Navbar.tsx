@@ -3,7 +3,7 @@
 import React, { useContext, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { TeamContenxt, UserContext } from "@/app/lib/context";
+import { SettingsContext, TeamContenxt, UserContext } from "@/app/lib/context";
 import {
   checkCurrentUserExists,
   loadTeamInformaition,
@@ -18,6 +18,7 @@ import {
   Settings,
   CircleDollarSign,
 } from "lucide-react";
+import AdminHelper from "@/app/lib/firebase/admin_helper_functions";
 
 const iconSize = 16;
 
@@ -43,7 +44,11 @@ export const adminMenu = [
     link: "/dashboard/schedules",
   },
   { icon: <CircleDollarSign size={iconSize} />, name: "Payments", link: "#" },
-  { icon: <Settings size={iconSize} />, name: "Settings", link: "#" },
+  {
+    icon: <Settings size={iconSize} />,
+    name: "Settings",
+    link: "/dashboard/settings",
+  },
 ];
 const userMenu = [
   // {
@@ -61,12 +66,22 @@ const userMenu = [
 const Navbar = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const { teamInformation, setTeamInformation } = useContext(TeamContenxt);
+  const { setSettings } = useContext(SettingsContext);
 
   async function fetchTeamInformation(uid: string) {
     const result: any = await loadTeamInformaition(uid);
 
     setTeamInformation(result);
   }
+
+  async function loadSettings() {
+    AdminHelper.fetchSettings(setSettings);
+  }
+
+  useEffect(() => {
+    //Load once when
+    loadSettings();
+  }, []);
 
   useEffect(() => {
     if (currentUser === undefined) {

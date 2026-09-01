@@ -1,11 +1,32 @@
-import { DashboardHeader } from "@/app/dashboard/components/DashboardHeader";
-import { TodaySchedule } from "@/app/dashboard/components/TodaySchedule";
-import { RecentBookings } from "@/app/dashboard/components/RecentBookings";
-import { QuickActions } from "@/app/dashboard/components/QuickAction";
-import { StatsOverview } from "./components/StatCardGrid";
-import { BookingTrends } from "./components/BookingTrendChart";
+"use client";
+import { useContext, useEffect, useMemo } from "react";
+import { BookingsContext, TeamsContext } from "../lib/context";
+import { BookingTrends } from "./components/bookingtrendchart";
+import { DashboardHeader } from "./components/dashboardheader";
+import { QuickActions } from "./components/quickaction";
+import { RecentBookings } from "./components/RecentBookings";
+import { StatsOverview } from "./components/statcardgrid";
+import {
+  filterTodaysSchedules,
+  TodaySchedule,
+} from "./components/todayschedule";
+import AdminHelper from "../lib/firebase/admin_helper_functions";
 
 export default function AdminDashboard() {
+  const { teams, setTeams } = useContext(TeamsContext);
+  const { bookings } = useContext(BookingsContext);
+
+  const todaysScheduleCount = useMemo(
+    () => filterTodaysSchedules(bookings),
+    [bookings],
+  )?.length;
+
+  useEffect(() => {
+    const unsubscribe = AdminHelper.fetchAllTeams({ setTeams });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="">
       <div className="">
@@ -20,7 +41,10 @@ export default function AdminDashboard() {
               Here is what is happening at Mak Sports Arena
             </p>
           </div>
-          <StatsOverview />
+          <StatsOverview
+            todaysScheduleCount={todaysScheduleCount}
+            teams={teams?.length}
+          />
 
           <div className="grid gap-4 xl:grid-cols-5">
             <BookingTrends className="xl:col-span-3" />

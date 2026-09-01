@@ -1,81 +1,45 @@
+"use client";
+import { useContext, useMemo } from "react";
+import { BookingsContext } from "@/app/lib/context";
 import { cn } from "@/app/lib/utils/utils";
+import { BookingStatus, BookingType } from "@/app/types/booking";
 
-type ScheduleStatus = "Available" | "Booked" | "In Progress" | "Canceled";
+const statusColors: Record<BookingStatus, string> = {
+  available: "#15803d",
+  confirmed: "#15803d",
+  completed: "#15803d",
+  booked: "#1d4ed8",
+  "in progress": "#95B409",
+  canceled: "#b45309",
+  pending: "#95B409",
+};
 
-const schedule: Array<{
-  timeSlot: string;
-  teamName: string;
-  status: ScheduleStatus;
-}> = [
-  {
-    timeSlot: "08:00 AM - 09:00 AM",
-    teamName: "Kampala United",
-    status: "Booked",
-  },
-  {
-    timeSlot: "09:00 AM - 10:00 AM",
-    teamName: "Mak Lions",
-    status: "Booked",
-  },
-  {
-    timeSlot: "10:00 AM - 11:00 AM",
-    teamName: "",
-    status: "Available",
-  },
-  {
-    timeSlot: "11:00 AM - 12:00 PM",
-    teamName: "City Strikers",
-    status: "Booked",
-  },
-  {
-    timeSlot: "12:00 PM - 01:00 PM",
-    teamName: "",
-    status: "Canceled",
-  },
-  {
-    timeSlot: "01:00 PM - 02:00 PM",
-    teamName: "Thunder FC",
-    status: "Booked",
-  },
-  {
-    timeSlot: "02:00 PM - 03:00 PM",
-    teamName: "",
-    status: "Available",
-  },
-  {
-    timeSlot: "03:00 PM - 04:00 PM",
-    teamName: "Elite Warriors",
-    status: "Booked",
-  },
-  {
-    timeSlot: "04:00 PM - 05:00 PM",
-    teamName: "Green Stars",
-    status: "In Progress",
-  },
-  {
-    timeSlot: "05:00 PM - 06:00 PM",
-    teamName: "Victory SC",
-    status: "Booked",
-  },
-  {
-    timeSlot: "06:00 PM - 07:00 PM",
-    teamName: "",
-    status: "Available",
-  },
-  {
-    timeSlot: "07:00 PM - 08:00 PM",
-    teamName: "Blue Eagles",
-    status: "Booked",
-  },
-];
-const statusColors: Record<ScheduleStatus, string> = {
-  Available: "#15803d",
-  Booked: "#1d4ed8",
-  "In Progress": "#95B409",
-  Canceled: "#b45309",
+export const filterTodaysSchedules = (bookings: BookingType[]) => {
+  const today = new Date();
+  return bookings
+    .filter((booking) => {
+      const bookingDate = new Date(booking.date);
+
+      return (
+        bookingDate.getFullYear() === today.getFullYear() &&
+        bookingDate.getMonth() === today.getMonth() &&
+        bookingDate.getDate() === today.getDate()
+      );
+    })
+    .sort(
+      (a, b) =>
+        Number(a.startTime.split(":")[0]) - Number(b.startTime.split(":")[0]),
+    );
 };
 
 export function TodaySchedule({ className }: { className?: string }) {
+  const { bookings } = useContext(BookingsContext);
+
+  const schedule: BookingType[] = useMemo(
+    () => filterTodaysSchedules(bookings),
+    [bookings],
+  );
+
   return (
     <div
       className={cn(
@@ -89,27 +53,33 @@ export function TodaySchedule({ className }: { className?: string }) {
       </div>
 
       <div className="space-y-2">
-        {schedule.slice(0, 7).map((item) => (
-          <div
-            key={item.timeSlot}
-            className="flex items-center justify-between border-b border-slate-200 pb-2">
-            <div className="flex items-center gap-6">
-              <p className="font-medium text-xs">{item.timeSlot}</p>
-              <p className="text-xs text-slate-500 font-semibold">
-                {item.teamName}
-              </p>
-            </div>
+        {schedule?.length === 0 ? (
+          <>No bookings yet!</>
+        ) : (
+          schedule?.slice(0, 7).map((item) => (
+            <div
+              key={item.bookingId}
+              className="flex items-center justify-between border-b border-slate-200 pb-2">
+              <div className="flex items-center gap-6">
+                <p className="font-medium text-xs">
+                  {item?.startTime} - {item?.endTime}
+                </p>
+                <p className="text-xs text-slate-500 font-semibold">
+                  {item.teamName}
+                </p>
+              </div>
 
-            <span
-              className="rounded-lg bg-green-100 px-3 py-1 text-[12px] font-medium text-green-700"
-              style={{
-                backgroundColor: statusColors[item.status] + "10",
-                color: statusColors[item.status],
-              }}>
-              {item.status}
-            </span>
-          </div>
-        ))}
+              <span
+                className="rounded-lg bg-green-100 px-3 py-1 text-[12px] font-medium text-green-700 capitalize"
+                style={{
+                  backgroundColor: statusColors[item.status] + "10",
+                  color: statusColors[item.status],
+                }}>
+                {item.status}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

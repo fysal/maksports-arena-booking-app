@@ -2,12 +2,11 @@ import { Eye, EyeOff, Users } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import InputField from "./InputField";
+import InputField from "./inputfield";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUser } from "@/app/lib/firebase/auth";
-import { useRouter } from "next/navigation";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -22,7 +21,6 @@ const TeamLogin = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm<loginData>({ resolver: zodResolver(schema) });
 

@@ -1,7 +1,7 @@
 import React from 'react'
-import SectionHeader from './SectionHeader';
 import { CalendarDays, CheckCircle2, UserPlus } from 'lucide-react';
 import { Activity } from '../page';
+import SectionHeader from './sectionheader';
 
 const RecentActivities = () => {
   return (

@@ -1,5 +1,7 @@
-'use client'
-import React from 'react'
+"use client";
+import { BookingsContext } from "@/app/lib/context";
+import { getWeekOfMonth } from "@/app/lib/utils/utils";
+import React, { useContext, useMemo } from "react";
 import {
   Area,
   AreaChart,
@@ -11,42 +13,40 @@ import {
 } from "recharts";
 
 const ChatStats = () => {
+  const { bookings } = useContext(BookingsContext);
 
-    const data = [
-      {
-        day: "Mon",
-        bookings: 12,
-      },
-      {
-        day: "Tue",
-        bookings: 22,
-      },
-      {
-        day: "Wed",
-        bookings: 29,
-      },
-      {
-        day: "Thu",
-        bookings: 16,
-      },
-      {
-        day: "Fri",
-        bookings: 26,
-      },
-      {
-        day: "Sat",
-        bookings: 15,
-      },
-      {
-        day: "Sun",
-        bookings: 80,
-      },
-    ];
+  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const currentWeek = getWeekOfMonth();
+
+  //filter bookings for the current week
+
+  const bookigsInWeek = useMemo(() => {
+    return bookings.filter(
+      (booking) => getWeekOfMonth(new Date(booking.date)) === currentWeek,
+    );
+  }, [bookings, currentWeek]);
+
+  function bookingsPerDay(day: number): number {
+    return bookigsInWeek.filter(
+      (booking) => new Date(booking.date).getDay() === day,
+    ).length;
+  }
+
+  const dataInDays = useMemo(() => {
+    return daysOfWeek.map((day, index) => ({
+      day,
+      bookings: bookingsPerDay(index + 1),
+    }));
+  }, [bookigsInWeek, bookingsPerDay, daysOfWeek]);
+
+  console.log(dataInDays);
+
   return (
     <div className="h-[320px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          data={data}
+          data={dataInDays}
           margin={{
             top: 10,
             right: 10,
@@ -107,6 +107,6 @@ const ChatStats = () => {
       </ResponsiveContainer>
     </div>
   );
-}
+};
 
-export default ChatStats
+export default ChatStats;

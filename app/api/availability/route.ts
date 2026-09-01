@@ -9,6 +9,13 @@ export async function GET(request: NextRequest) {
     const duration: number = Number(
       request.nextUrl.searchParams.get("duration"),
     );
+    const openingTime: string | null =
+      request.nextUrl.searchParams.get("openingTime") ??
+      process.env.NEXT_PUBLIC_DEFAULT_OPENING_TIME!;
+
+    const closingTime: string | null =
+      request?.nextUrl?.searchParams?.get("closingTime") ??
+      process.env.NEXT_PUBLIC_DEFAULT_CLOSING_TIME!;
 
     if (!date) {
       return NextResponse.json(
@@ -30,6 +37,8 @@ export async function GET(request: NextRequest) {
     const bookedSlots = snapshot.docs.map((doc) => doc.data().startTime);
 
     const slots = generateTimeSlots({
+      openingTime,
+      closingTime,
       durationMinutes: duration,
     });
 

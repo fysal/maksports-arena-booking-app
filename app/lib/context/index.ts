@@ -1,7 +1,9 @@
+"use client";
 import { createContext } from "react";
 import { Team } from "@/app/types/team";
 import { BookingType } from "@/app/types/booking";
-import { currentUserType } from "@/app/types/user";
+import { currentUserType, UserProfile } from "@/app/types/user";
+import { Settings } from "@/app/types/settings";
 
 type userContextType = {
   currentUser: currentUserType | undefined | null;
@@ -34,4 +36,33 @@ export const BookingsContext = createContext<bookingsContextType>({
   setBookings: () => {},
 });
 
+type teamsContextType = {
+  teams: Team[] | null;
+  setTeams: React.Dispatch<React.SetStateAction<Team[] | null>>;
+};
 
+export const TeamsContext = createContext<teamsContextType>({
+  teams: null,
+  setTeams: () => {},
+});
+
+type userProfileType = {
+  profiles: UserProfile[] | null;
+  setProfiles: React.Dispatch<React.SetStateAction<UserProfile[] | null>>;
+};
+
+export const ProfilesContext = createContext<userProfileType>({
+  profiles: null,
+  setProfiles: () => {},
+});
+
+
+type settingsContextType = {
+  settings: Settings | null;
+  setSettings: React.Dispatch<React.SetStateAction<Settings | null>>
+}
+
+export const SettingsContext = createContext<settingsContextType>({
+  settings: null,
+  setSettings: () => {},
+});

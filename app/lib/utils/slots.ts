@@ -4,13 +4,13 @@ export interface TimeSlot {
 }
 
 export function generateTimeSlots({
-  openingTime = "08:00",
-  closingTime = "23:59",
+  openingTime = process.env.NEXT_PUBLIC_DEFAULT_OPENING_TIME!,
+  closingTime = process.env.NEXT_PUBLIC_DEFAULT_CLOSING_TIME!,
   durationMinutes = 60,
 }: {
   openingTime?: string;
   closingTime?: string;
-  durationMinutes? :number;
+  durationMinutes?: number;
 }): TimeSlot[] {
   const slots: TimeSlot[] = [];
 

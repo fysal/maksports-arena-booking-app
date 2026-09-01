@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const data = await req.json();
+
     const {
       teamName,
       shortName,
@@ -13,7 +15,7 @@ export async function POST(req: NextRequest) {
       uid,
       number_of_players,
       name,
-    } = await req.json();
+    } = data;
 
     const team = adminDb.collection("teams").doc(id);
 
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
         name,
         email,
         phoneNumber,
+        status: data?.status ?? "active"
       }),
     ]);
 

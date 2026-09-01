@@ -3,9 +3,9 @@
 
 import { Fragment, useContext, useEffect, useState } from "react";
 
-import BookingCalendar from "@/app/components/booking/BookingCalendar";
+import BookingCalendar from "@/app/components/booking/bookingcalendar";
 
-import TimeSlotPicker from "@/app/components/booking/TimeSlotPicker";
+import TimeSlotPicker from "@/app/components/booking/timeslotpicker";
 import {
   MoveRight,
   CalendarDays,
@@ -16,15 +16,17 @@ import {
 } from "lucide-react";
 import BookingForm, {
   BookingFormData,
-} from "../components/booking/BookingForm";
-import ReviewAndPayment from "../components/booking/ReviewAndPayment";
+} from "../components/booking/bookingform";
+import ReviewAndPayment from "../components/booking/reviewandpayment";
 import Navbar from "../components/nav/Navbar";
-import { TeamContenxt, UserContext } from "../lib/context";
+import { SettingsContext, TeamContenxt, UserContext } from "../lib/context";
 import BookingHandler from "../lib/booking_handler";
 import { generateRandomIds } from "../lib/utils/utils";
 import { useRouter } from "next/navigation";
 import { BookingType } from "../types/booking";
 import Footer from "../components/Footer";
+import PageLoading from "../components/pageloading";
+import MaintenancePage from "../components/UnderMaintenance";
 
 export interface TimeSlot {
   startTime: string;
@@ -33,6 +35,7 @@ export interface TimeSlot {
 }
 
 export default function BookPage() {
+  const { settings } = useContext(SettingsContext);
   const [date, setDate] = useState<Date>();
 
   const [slots, setSlots] = useState<TimeSlot[]>([]);
@@ -60,6 +63,8 @@ export default function BookPage() {
   async function fetchAvailableSlots(dateString: string) {
     setLoadingSlots(true);
     const data = await BookingHandler.fetchAvailableslots({
+      openingTime: settings!.operatingHours.openingTime,
+      closingTime: settings!.operatingHours.closingTime,
       dateString,
       duration,
     });
@@ -73,7 +78,6 @@ export default function BookPage() {
   useEffect(() => {
     if (!date) return;
     const dateString = date.toISOString().split("T")[0];
-    // defer calling fetchAvailableSlots to avoid synchronous setState inside effect
     const fTimeout = setTimeout(() => fetchAvailableSlots(dateString), 0);
 
     return () => clearTimeout(fTimeout);
@@ -95,8 +99,6 @@ export default function BookPage() {
     return () => clearTimeout(timeout);
   }, [currentUser, teamInformation]);
 
-
-  console.log(teamInformation)
   const captureFormData = (_data: BookingFormData | unknown | any) => {
     setTeamInfo({ ..._data });
     handleNext();
@@ -116,8 +118,13 @@ export default function BookPage() {
 
   const onDurationChanged = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const dRange = Number(e.target.value);
-    if (dRange === 50) setFee(50000);
-    else setFee(750000);
+
+    const _fee: number = settings!.slotPricing.find(
+      (slot) => slot.duration === dRange,
+    )!.price;
+
+    setFee(_fee);
+
     setDuration(dRange);
   };
 
@@ -132,6 +139,7 @@ export default function BookPage() {
       endTime: selectedSlot!.endTime,
       number_of_players: teamInfo.number_of_players ?? 0,
       createdBy: currentUser?.uid ?? "anonymous",
+      status: "pending",
       uid: currentUser?.uid ?? " ",
       contactInformation: {
         name: teamInfo.contactPerson ?? " ",
@@ -164,192 +172,215 @@ export default function BookPage() {
     <main className="min-h-screen bg-gray-50 ">
       <Navbar />
       <div className="mx-auto max-w-7xl py-12 relative">
-        <div className="mb-10">
-          <p className="text-sm font-semibold uppercase tracking-widest">
-            MAK Sports Arena
-          </p>
+        {settings &&
+          (settings.system.maintenanceMode ? (
+            <MaintenancePage />
+          ) : (
+            <Fragment>
+              <div className="mb-10">
+                <p className="text-sm font-semibold uppercase tracking-widest">
+                  MAK Sports Arena
+                </p>
 
-          <h1 className="mt-2 text-4xl font-bold">Book your playing time</h1>
+                <h1 className="mt-2 text-4xl font-bold">
+                  Book your playing time
+                </h1>
 
-          <p className="mt-3 text-gray-500">
-            Choose a date and select an available time slot.
-          </p>
-        </div>
-        <div className="flex gap-5 items-center justify-end mb-5 capitalize">
-          {tabs.map((text, idx: number) => {
-            const isActive = idx === activeScreen;
-            return (
-              <Fragment key={idx}>
-                <div className={`${isActive ? "font-bold" : "text-slate-400"}`}>
-                  {text}
-                </div>{" "}
-                {tabs.length - 1 > idx && (
-                  <span>
-                    {" "}
-                    <MoveRight className="text-slate-400" />
-                  </span>
-                )}
-              </Fragment>
-            );
-          })}
-        </div>
-        {activeScreen === 0 ? (
-          <div className="grid gap-8 lg:grid-cols-2 relative">
-            <BookingCalendar onSelect={setDate} />
-            <div className="rounded-3xl bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-6 ">
-                <h2 className="text-xl font-bold">Available times</h2>
-                <div className="flex items-center gap-3">
-                  <p>Duration:</p>
-                  <select
-                    defaultValue={60}
-                    className="select"
-                    onChange={onDurationChanged}>
-                    {[60, 90].map((num: number) => (
-                      <option value={num} key={num}>
-                        {num} Mins
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <p className="mt-3 text-gray-500">
+                  Choose a date and select an available time slot.
+                </p>
               </div>
-
-              {!date && (
-                <p className="text-gray-500">
-                  Select a date to view available times.
-                </p>
-              )}
-
-              {loadingSlots && (
-                <p className="text-gray-500 mb-3">
-                  Loading slots. Please wait...
-                </p>
-              )}
-
-              {date && !loadingSlots && (
-                <TimeSlotPicker
-                  slots={slots}
-                  selected={selectedSlot?.startTime}
-                  onSelect={setSelectedSlot}
-                />
-              )}
-            </div>
-          </div>
-        ) : activeScreen === 1 ? (
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="rounded-xl bg-card p-8 bg-slate-100/10 border border-slate-300">
-              <div className=" flex-col gap-8 md:flex-row md:items-center">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold">Booking Summary</h3>
-
-                  <p className="mt-1 text-muted-foreground">
-                    Review your selected date and playing slot.
-                  </p>
-                </div>
-                <div className="flex justify-between">
-                  {/* Date Card */}
-                  <div className="flex-shrink-0 mb-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <CalendarDays className="h-5 w-5 text-primary" />
-
-                      <div className="slot-label">Selected Date</div>
-                    </div>
-                    <div className="flex h-44 w-40 flex-col overflow-hidden rounded-2xl border bg-background">
-                      <div className="bg-primary px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground">
-                        {date?.toLocaleDateString("en-US", { month: "long" })}
-                      </div>
-
-                      <div className="flex flex-1 flex-col items-center justify-center">
-                        <span className="text-7xl font-black leading-none">
-                          {date?.getDate()}
+              <div className="flex gap-5 items-center justify-end mb-5 capitalize">
+                {tabs.map((text, idx: number) => {
+                  const isActive = idx === activeScreen;
+                  return (
+                    <Fragment key={idx}>
+                      <div
+                        className={`${isActive ? "font-bold" : "text-slate-400"}`}>
+                        {text}
+                      </div>{" "}
+                      {tabs.length - 1 > idx && (
+                        <span>
+                          {" "}
+                          <MoveRight className="text-slate-400" />
                         </span>
-
-                        <span className="mt-2 text-sm font-medium text-muted-foreground">
-                          {date?.toLocaleDateString("en-US", {
-                            weekday: "long",
-                          })}
-                        </span>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </div>
+              {activeScreen === 0 ? (
+                <div className="grid gap-8 lg:grid-cols-2 relative">
+                  <BookingCalendar onSelect={setDate} />
+                  <div className="rounded-3xl bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-6 ">
+                      <h2 className="text-xl font-bold">Available times</h2>
+                      <div className="flex items-center gap-3">
+                        <p>Duration:</p>
+                        <select
+                          defaultValue={60}
+                          className="select"
+                          onChange={onDurationChanged}>
+                          {settings.slotPricing.map((slot, idx: number) => (
+                            <option value={slot.duration} key={idx}>
+                              {slot.duration} Mins
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
-                  </div>
-                  <div>
-                    <div className="mt-8" />
-                    <div className="flex flex-col justify-center items-center gap-0">
-                      <span className="slot-years">
-                        {date?.getFullYear().toString().split("").slice(0, 2)}
-                      </span>
-                      <span className="slot-years">
-                        {date?.getFullYear().toString().split("").slice(2)}
-                      </span>
-                    </div>
+
+                    {!date && (
+                      <p className="text-gray-500">
+                        Select a date to view available times.
+                      </p>
+                    )}
+
+                    {loadingSlots && (
+                      <p className="text-gray-500 mb-3">
+                        Loading slots. Please wait...
+                      </p>
+                    )}
+
+                    {date && !loadingSlots && (
+                      <TimeSlotPicker
+                        slots={slots}
+                        selected={selectedSlot?.startTime}
+                        onSelect={setSelectedSlot}
+                      />
+                    )}
                   </div>
                 </div>
-                {/* Booking Details */}
-                <div className="">
-                  <div className="space-y-5">
-                    <div className=" items-center gap-3">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Clock3 className="h-5 w-5 text-primary" />
+              ) : activeScreen === 1 ? (
+                <div className="grid gap-8 lg:grid-cols-3">
+                  <div className="rounded-xl bg-card p-8 bg-slate-100/10 border border-slate-300">
+                    <div className=" flex-col gap-8 md:flex-row md:items-center">
+                      <div className="mb-6">
+                        <h3 className="text-2xl font-bold">Booking Summary</h3>
 
-                        <div className="slot-label">Playing Slot</div>
+                        <p className="mt-1 text-muted-foreground">
+                          Review your selected date and playing slot.
+                        </p>
                       </div>
+                      <div className="flex justify-between">
+                        {/* Date Card */}
+                        <div className="flex-shrink-0 mb-5">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CalendarDays className="h-5 w-5 text-primary" />
 
-                      <div className="w-full">
-                        <div className="flex flex-wrap  items-center gap-3">
-                          <div className="slot-time">
-                            {selectedSlot?.startTime}
+                            <div className="slot-label">Selected Date</div>
                           </div>
+                          <div className="flex h-44 w-40 flex-col overflow-hidden rounded-2xl border bg-background">
+                            <div className="bg-primary px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground">
+                              {date?.toLocaleDateString("en-US", {
+                                month: "long",
+                              })}
+                            </div>
 
-                          <UnfoldVertical />
+                            <div className="flex flex-1 flex-col items-center justify-center">
+                              <span className="text-7xl font-black leading-none">
+                                {date?.getDate()}
+                              </span>
 
-                          <div className="slot-time">
-                            {selectedSlot?.endTime}
+                              <span className="mt-2 text-sm font-medium text-muted-foreground">
+                                {date?.toLocaleDateString("en-US", {
+                                  weekday: "long",
+                                })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="mt-8" />
+                          <div className="flex flex-col justify-center items-center gap-0">
+                            <span className="slot-years">
+                              {date
+                                ?.getFullYear()
+                                .toString()
+                                .split("")
+                                .slice(0, 2)}
+                            </span>
+                            <span className="slot-years">
+                              {date
+                                ?.getFullYear()
+                                .toString()
+                                .split("")
+                                .slice(2)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Booking Details */}
+                      <div className="">
+                        <div className="space-y-5">
+                          <div className=" items-center gap-3">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Clock3 className="h-5 w-5 text-primary" />
+
+                              <div className="slot-label">Playing Slot</div>
+                            </div>
+
+                            <div className="w-full">
+                              <div className="flex flex-wrap  items-center gap-3">
+                                <div className="slot-time">
+                                  {selectedSlot?.startTime}
+                                </div>
+
+                                <UnfoldVertical />
+
+                                <div className="slot-time">
+                                  {selectedSlot?.endTime}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                  <div className="col-span-2">
+                    {" "}
+                    <BookingForm
+                      onSubmit={captureFormData}
+                      defaultValues={teamInfo}
+                    />
+                  </div>
                 </div>
+              ) : (
+                <ReviewAndPayment
+                  date={date}
+                  selectedSlot={selectedSlot!}
+                  booking={{ ...teamInfo! }}
+                  amount={fee}
+                  duration={duration}
+                  error={slotError}
+                  loading={isProcessing}
+                  onProceedToPayment={onProceedToPayment}
+                />
+              )}
+              <div className="flex items-center justify-center gap-5 py-20">
+                {activeScreen > 0 && (
+                  <button
+                    onClick={handlePrevious}
+                    className="flex items-center gap-2 px-5 py-3 cursor-pointer border border-slate-300 rounded-lg hover:bg-slate-600 hover:text-slate-100">
+                    <ArrowLeft className="" size={17} /> <span>Back</span>
+                  </button>
+                )}
+                {selectedSlot && activeScreen < 1 && (
+                  <button
+                    onClick={handleNext}
+                    className="flex items-center gap-2 border border-slate-700 px-8 cursor-pointer py-3 rounded-lg hover:bg-slate-800 hover:text-white">
+                    <span>Next</span>{" "}
+                    <ArrowRight className="text-sm" size={17} />
+                  </button>
+                )}
               </div>
-            </div>
-            <div className="col-span-2">
-              {" "}
-              <BookingForm
-                onSubmit={captureFormData}
-                defaultValues={teamInfo}
-              />
-            </div>
-          </div>
-        ) : (
-          <ReviewAndPayment
-            date={date}
-            selectedSlot={selectedSlot!}
-            booking={{ ...teamInfo! }}
-            amount={fee}
-            duration={duration}
-            error={slotError}
-            loading={isProcessing}
-            onProceedToPayment={onProceedToPayment}
-          />
-        )}
-        <div className="flex items-center justify-center gap-5 py-20">
-          {activeScreen > 0 && (
-            <button
-              onClick={handlePrevious}
-              className="flex items-center gap-2 px-5 py-3 cursor-pointer border border-slate-300 rounded-lg hover:bg-slate-600 hover:text-slate-100">
-              <ArrowLeft className="" size={17} /> <span>Back</span>
-            </button>
-          )}
-          {selectedSlot && activeScreen < 1 && (
-            <button
-              onClick={handleNext}
-              className="flex items-center gap-2 border border-slate-700 px-8 cursor-pointer py-3 rounded-lg hover:bg-slate-800 hover:text-white">
-              <span>Next</span> <ArrowRight className="text-sm" size={17} />
-            </button>
-          )}
-        </div>
+            </Fragment>
+          ))}
+
+        {!settings && <PageLoading />}
       </div>
-      <Footer/>
+      <Footer />
     </main>
   );
 }

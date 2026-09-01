@@ -17,7 +17,6 @@ import {
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { generateRandomIds } from "../utils/utils";
-import { redirect } from "next/navigation";
 
 type registerTeamInfo = {
   teamName: string;

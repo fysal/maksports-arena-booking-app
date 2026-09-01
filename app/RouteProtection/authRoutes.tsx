@@ -5,7 +5,7 @@ import { useContext, useEffect } from "react";
 import { UserContext } from "../lib/context";
 import { useRouter } from "next/navigation";
 import { checkCurrentUserExists } from "../lib/firebase/auth";
-import PageLoading from "../components/pageLoading";
+import PageLoading from "../components/pageloading";
 
 const WithAuthRoutes = (Component: any) => {
   const WithAuthHook = (props: any) => {
@@ -24,7 +24,7 @@ const WithAuthRoutes = (Component: any) => {
     if (currentUser === null || currentUser.isAnonymous) {
       return <Component {...props} />;
     } else {
-      return router.replace("/");
+      return router.replace("/team-management");
     }
   };
 

@@ -1,5 +1,5 @@
 import { cn } from "@/app/lib/utils/utils";
-import ChatStats from "./ChatStats";
+import ChatStats from "./chatstats";
 
 export function BookingTrends({ className }: { className?: string }) {
   return (

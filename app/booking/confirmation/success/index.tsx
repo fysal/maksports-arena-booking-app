@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CalendarDays,
@@ -15,7 +15,6 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import { UserContext } from "@/app/lib/context";
 import { BookingType } from "@/app/types/booking";
 
 type ConfettiPiece = {
@@ -36,7 +35,6 @@ export default function BookingSuccessPage({
   const [showContent, setShowContent] = useState(false);
   const [showPopConfetti, setShowPopConfetti] = useState(true);
 
-  const { currentUser } = useContext(UserContext);
 
   /*
    * Generate the falling confetti once.

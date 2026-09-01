@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Clock3, MapPin, Minus, MoreHorizontal, Plus } from "lucide-react";
+import { Clock3, MapPin, Minus, Plus } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import { BookingType } from "@/app/types/booking";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function BookingCard({ booking }: { booking: BookingType }) {
   const details = {

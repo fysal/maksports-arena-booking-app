@@ -1,5 +1,13 @@
 "use client";
 import {
+  BookingsContext,
+  ProfilesContext,
+  SettingsContext,
+  TeamsContext,
+  UserContext,
+} from "@/app/lib/context";
+import AdminHelper from "@/app/lib/firebase/admin_helper_functions";
+import {
   LayoutDashboard,
   CalendarDays,
   Users,
@@ -11,6 +19,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useContext, useEffect } from "react";
 
 const links = [
   { icon: LayoutDashboard, label: "Dashboard", link: "/dashboard" },
@@ -21,12 +30,45 @@ const links = [
 
 const secondary_links = [
   { icon: CreditCard, label: "Payments", link: "/dashboard/payments" },
-  { icon: FileBarChart2, label: "Reports", link: "/dashboard/reports" },
+  { icon: FileBarChart2, label: "Preferences", link: "/dashboard/reports" },
   { icon: Settings, label: "Settings", link: "/dashboard/settings" },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+
+  const { setBookings } = useContext(BookingsContext);
+  const { currentUser } = useContext(UserContext);
+  const { setProfiles } = useContext(ProfilesContext);
+  const { setTeams } = useContext(TeamsContext);
+  const { settings, setSettings } = useContext(SettingsContext);
+
+  async function fetchBookings() {
+    await AdminHelper.fetchAllBooking({
+      setBookings,
+    });
+  }
+
+  async function fetchTeams() {
+    AdminHelper.fetchAllTeams({ setTeams });
+  }
+
+  async function fetchProfiles() {
+    AdminHelper.fetchAllProfiles({ setProfiles });
+  }
+
+  async function fetchSettings() {
+    AdminHelper.fetchSettings(setSettings);
+  }
+
+  useEffect(() => {
+    if (!settings) fetchSettings();
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    Promise.all([fetchBookings(), fetchTeams(), fetchProfiles()]);
+  }, [currentUser]);
 
   return (
     <aside className="flex w-72 flex-col bg-[#062E1D] text-white">
@@ -58,12 +100,15 @@ export function Sidebar() {
         <div className="border-t border-slate-100/20 mx-5 my-2" />
         <nav className="px-4">
           {secondary_links.map((item) => (
-            <button
+            <Link
+              href={item.link}
               key={item.label}
-              className="mb-2 flex w-full text-sm items-center gap-4 rounded-2xl px-4 py-4 text-left transition hover:bg-white/10 cursor-pointer">
+              className={`mb-2 flex w-full text-sm items-center gap-4 rounded-xl px-4 py-4 text-left 
+                transition-all hover:bg-white/10 cursor-pointer 
+              ${pathname === item.link ? "border-l border-l-1 border-l-yellow-400 bg-white/10" : "bg-transparent"}`}>
               <item.icon size={20} />
               {item.label}
-            </button>
+            </Link>
           ))}
         </nav>
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
 import Navbar from "../components/nav/Navbar";
-import TeamLogin from "./widgets/teamLogin";
-import RegisterTeam from "./widgets/registerTeam";
+import TeamLogin from "./widgets/teamlogin";
+import RegisterTeam from "./widgets/registerteam";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Footer from "../components/Footer";

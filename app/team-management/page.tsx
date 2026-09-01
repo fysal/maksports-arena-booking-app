@@ -16,9 +16,9 @@ import {
   Users,
   X,
 } from "lucide-react";
-import SectionHeader from "./components/SectionHeader";
-import TeamStat from "./components/TeamStat";
-import MemberCard from "./components/MemberCard";
+import SectionHeader from "./components/sectionheader";
+import TeamStat from "./components/teamstat";
+import MemberCard from "./components/membercard";
 import ScheduleRow from "./components/ScheduleRow";
 import BookingCard from "./components/BookingCard";
 import { BookingsContext, TeamContenxt, UserContext } from "../lib/context";
@@ -72,7 +72,7 @@ export default function TeamManagementPage() {
   >("overview");
 
   const [showInvite, setShowInvite] = useState(false);
-  const [now, setNow] = useState(() => Date.now()); 
+  const [now] = useState(() => Date.now()); 
 
   
   const { bookings } = useContext(BookingsContext);

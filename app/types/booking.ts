@@ -1,4 +1,13 @@
-export type BookingStatus = "confirmed" | "cancelled" | "completed" | "pending";
+import { Timestamp } from "firebase/firestore";
+
+export type BookingStatus =
+  | "confirmed"
+  | "canceled"
+  | "completed"
+  | "booked"
+  | "pending"
+  | "in progress"
+  | "available";
 
 export type BookingType = {
   bookingId?: string;
@@ -7,15 +16,17 @@ export type BookingType = {
   date: Date;
   startTime: string;
   endTime: string;
-  status?: BookingStatus;
+  status: BookingStatus;
   uid?: string | null;
   createdBy?: string;
-  createdAt?: string;
+  createdAt?: string | Timestamp;
   duration: number;
   contactInformation: ContactPerson;
   teamMembers?: number;
   fee: number;
   number_of_players: number;
+  notes?: string;
+  admin_name?: string;
 };
 
 export type slotBookingType = {

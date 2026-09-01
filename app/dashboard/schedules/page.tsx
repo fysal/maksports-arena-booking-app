@@ -12,10 +12,10 @@ import {
   Trophy,
 } from "lucide-react";
 import { addDays, addWeeks, format, startOfWeek } from "date-fns";
-import { StatCard } from "../components/StatCards";
-import ArenaControls from "./components/ArenaControls";
-import BlockArena from "./components/BlockArena";
-import ScheduleLegends from "./components/ScheduleLegends";
+import { StatCard } from "../components/statcards";
+import ArenaControls from "./components/arenacontrols";
+import BlockArena from "./components/blockarena";
+import ScheduleLegends from "./components/schedulelegends";
 
 type BookingStatus = "booked" | "reserved" | "blocked";
 

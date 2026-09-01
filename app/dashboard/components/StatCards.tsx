@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 interface Props {
   title: string;
-  value: string;
+  value?: string | number;
   trend?: string;
   icon: ReactNode;
   color?: string;
@@ -10,7 +10,7 @@ interface Props {
 
 export function StatCard({
   title,
-  value,
+  value = "0",
   trend,
   icon,
   color = "#008230",

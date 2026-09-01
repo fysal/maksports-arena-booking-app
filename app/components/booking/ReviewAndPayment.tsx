@@ -10,8 +10,8 @@ import {
   UnfoldVertical,
   Clock10Icon,
 } from "lucide-react";
-import { BookingFormData } from "./BookingForm";
 import { useEffect } from "react";
+import { BookingFormData } from "./bookingform";
 
 interface ReviewPaymentProps {
   date: Date | undefined;

@@ -10,11 +10,11 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Navbar from "./components/nav/Navbar";
-import HomeStats from "./components/homeStats";
+import HomeStats from "./components/homestats";
 import { useContext } from "react";
 import { UserContext } from "./lib/context";
-import FeatureCard from "./components/FeatureCard";
-import StepCard from "./components/StepCard";
+import FeatureCard from "./components/featurecard";
+import StepCard from "./components/stepcard";
 import Footer from "./components/Footer";
 
 export default function HomePage() {

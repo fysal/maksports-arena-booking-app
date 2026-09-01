@@ -14,12 +14,8 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
-import BookingForm, {
-  BookingFormData,
-} from "../components/booking/bookingform";
-import ReviewAndPayment from "../components/booking/reviewandpayment";
-import Navbar from "../components/nav/Navbar";
-import { SettingsContext, TeamContenxt, UserContext } from "../lib/context";
+
+
 import BookingHandler from "../lib/booking_handler";
 import { generateRandomIds } from "../lib/utils/utils";
 import { useRouter } from "next/navigation";
@@ -27,6 +23,12 @@ import { BookingType } from "../types/booking";
 import Footer from "../components/Footer";
 import PageLoading from "../components/pageloading";
 import MaintenancePage from "../components/UnderMaintenance";
+import BookingForm, {
+  BookingFormData,
+} from "../components/booking/bookingform";
+import { SettingsContext, TeamContenxt, UserContext } from "../lib/context";
+import Navbar from "../components/nav/Navbar";
+import ReviewAndPayment from "../components/booking/reviewandpayment";
 
 export interface TimeSlot {
   startTime: string;

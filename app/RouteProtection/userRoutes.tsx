@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import { useContext, useEffect } from "react";
 import { UserContext } from "../lib/context";
+import { useRouter } from "next/router";
 import { checkCurrentUserExists } from "../lib/firebase/auth";
-import { useRouter } from "next/navigation";
 import PageLoading from "../components/pageloading";
+
 
 export default function WithUserRoutes(Component: any) {
   const WithUserHook = (props: any) => {

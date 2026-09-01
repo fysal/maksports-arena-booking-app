@@ -1,11 +1,12 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useContext, useEffect } from "react";
 import { UserContext } from "../lib/context";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { checkCurrentUserExists } from "../lib/firebase/auth";
 import PageLoading from "../components/pageloading";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 const WithAuthRoutes = (Component: any) => {
   const WithAuthHook = (props: any) => {

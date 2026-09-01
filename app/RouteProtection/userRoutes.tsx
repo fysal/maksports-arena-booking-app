@@ -3,10 +3,9 @@
 
 import { useContext, useEffect } from "react";
 import { UserContext } from "../lib/context";
-import { useRouter } from "next/router";
 import { checkCurrentUserExists } from "../lib/firebase/auth";
 import PageLoading from "../components/pageloading";
-
+import { useRouter } from "next/navigation";
 
 export default function WithUserRoutes(Component: any) {
   const WithUserHook = (props: any) => {

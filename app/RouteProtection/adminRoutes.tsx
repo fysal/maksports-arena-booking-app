@@ -4,7 +4,7 @@ import { useContext, useEffect } from "react";
 import { UserContext } from "../lib/context";
 import { checkCurrentUserExists } from "../lib/firebase/auth";
 import { useRouter } from "next/navigation";
-import PageLoading from "@/app/components/pageloading";
+import PageLoading from "../components/pageloading";
 
 const WithAdminRoutes = (Component: any) => {
   const WithAdminHook = (props: any) => {

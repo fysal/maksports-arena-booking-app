@@ -17,6 +17,7 @@ import { Timestamp } from "firebase/firestore";
 import { filterTodaysSchedules } from "../components/todayschedule";
 import Drawer from "@/app/components/Drawer";
 import EditBookingForm from "./widget/EditBooking";
+import { DashboardHeader } from "../components/dashboardheader";
 
 function StatusBadge({ status }: { status: string }) {
   const styles = {

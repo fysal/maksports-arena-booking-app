@@ -21,6 +21,7 @@ import { UserProfile } from "@/app/types/user";
 import { TeamCard } from "./TeamCard";
 import EditTeamAndProfile from "../components/EditTeamAndProfile";
 import Drawer from "@/app/components/Drawer";
+import { DashboardHeader } from "../components/dashboardheader";
 
 interface inforInEditType {
   team: Team | null;

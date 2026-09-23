@@ -244,7 +244,7 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 pb-10">
+    <div className="mx-auto max-w-7xl space-y-6 pb-10 mt-3">
       {/* Header */}
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">

@@ -6,7 +6,7 @@ import { ArrowLeft, Bell, Calendar, LogOut, Search } from "lucide-react";
 import Link from "next/link";
 import { useContext } from "react";
 
-export function DashboardHeader() {
+export function DashboardHeader({ showForm = false }: { showForm?: boolean }) {
   const iconSize = 16;
 
   const { currentUser } = useContext(UserContext);
@@ -17,23 +17,27 @@ export function DashboardHeader() {
 
   return (
     <header className="flex items-center justify-between">
-      <div className="relative w-full max-w-md">
-        <Search
-          size={18}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-        />
+      {showForm ? (
+        <div className="relative w-full max-w-md">
+          <Search
+            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          />
 
-        <input
-          placeholder="Search anything..."
-          className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-12"
-        />
-      </div>
+          <input
+            placeholder="Search anything..."
+            className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-12"
+          />
+        </div>
+      ) : (
+        <div />
+      )}
 
       <div className="flex items-center gap-4">
         <Link
           href="/"
-          className="text-sm flex items-center hover:bg-slate-200 p-2 rounded">
-          <ArrowLeft size={13} /> <span>Go Home</span>
+          className="text-sm flex gap-2 items-center hover:bg-slate-200 p-2 rounded">
+          <ArrowLeft size={15} /> <span>Go Home</span>
         </Link>
         <button className="flex h-12 items-center gap-2 rounded-lg border border-slate-200 text-sm bg-white px-4">
           <Calendar size={15} />

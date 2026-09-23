@@ -17,6 +17,7 @@ import {
   Clock3,
   Settings,
   CircleDollarSign,
+  FileBarChart2,
 } from "lucide-react";
 import AdminHelper from "@/app/lib/firebase/admin_helper_functions";
 
@@ -44,6 +45,11 @@ export const adminMenu = [
     link: "/dashboard/schedules",
   },
   { icon: <CircleDollarSign size={iconSize} />, name: "Payments", link: "#" },
+  {
+    icon: <FileBarChart2 size={iconSize} />,
+    name: "Preferences",
+    link: "/preferences",
+  },
   {
     icon: <Settings size={iconSize} />,
     name: "Settings",

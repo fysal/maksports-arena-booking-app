@@ -11,10 +11,13 @@ import {
   TodaySchedule,
 } from "./components/todayschedule";
 import AdminHelper from "../lib/firebase/admin_helper_functions";
+import { usePathname } from "next/navigation";
 
 export default function AdminDashboard() {
   const { teams, setTeams } = useContext(TeamsContext);
   const { bookings } = useContext(BookingsContext);
+
+  const pathname = usePathname();
 
   const todaysScheduleCount = useMemo(
     () => filterTodaysSchedules(bookings),
@@ -30,7 +33,7 @@ export default function AdminDashboard() {
   return (
     <div className="">
       <div className="">
-        <DashboardHeader />
+        <DashboardHeader showForm={true} />
 
         <div className="mt-8 space-y-6">
           <div>

@@ -79,7 +79,7 @@ export default function AuthPage() {
               })}
             </div>
           </div>
-          <div className="w-2xl m-auto">
+          <div className="w-ful lg:w-2xl m-auto">
             {/* Login Section */}
             {activeTab === 0 && (
               <div>
@@ -96,7 +96,7 @@ export default function AuthPage() {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </main>
   );
 }

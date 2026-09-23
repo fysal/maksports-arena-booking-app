@@ -16,6 +16,8 @@ import { UserContext } from "./lib/context";
 import FeatureCard from "./components/featurecard";
 import StepCard from "./components/stepcard";
 import Footer from "./components/Footer";
+import AnnonymousUserHome from "./components/AnnonymousUserHome";
+import AuthenticatedUserHome from "./components/AuthenticatedUserHome";
 
 export default function HomePage() {
   const { currentUser } = useContext(UserContext);
@@ -28,13 +30,13 @@ export default function HomePage() {
         <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-green-400/20 blur-3xl" />
         <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-emerald-500/10 blur-3xl" />
         <div className="absolute bottom-0 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-lime-400/10 blur-3xl" />
-        <div className="mx-auto max-w-7xl px-6 py-24 lg:pt-32 relative">
+        <div className="mx-auto max-w-7xl px-6 py-24 pt-15 lg:pt-32 relative">
           <div className="grid items-center gap-16 lg:grid-cols-2">
             <div>
               <div className="mb-6 inline-flex items-center rounded-full border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
                 ⚽ Arena Booking Platform
               </div>
-              <h1 className="text-5xl font-black tracking-tight text-slate-900 md:text-6xl">
+              <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 md:text-6xl">
                 Book Your Team&apos;s
                 <span className="block text-green-600">Playing Time</span>
                 In Minutes
@@ -121,7 +123,7 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
+      <section className="mx-auto max-w-7xl px-6 py-15 lg:py-24">
         <div className="mb-14 text-center">
           <h2 className="text-4xl font-black">Everything You Need</h2>
 
@@ -131,7 +133,6 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          
           <FeatureCard
             num={1}
             icon={<CalendarDays size={23} strokeWidth={2.2} />}
@@ -167,12 +168,10 @@ export default function HomePage() {
           </div>
 
           <div className="relative grid gap-6 md:grid-cols-3 md:gap-0">
-            
             {/* Connecting line */}
             <div className="pointer-events-none absolute left-[16.66%] right-[16.66%] top-[40px] hidden h-px bg-gradient-to-r from-green-500/20 via-green-500/60 to-green-500/20 md:block" />
             {/* Animated line */}
             <div className="pointer-events-none absolute left-[16.66%] right-[16.66%] top-[39px] hidden h-[2px] overflow-hidden md:block">
-              
               <div className="h-full w-1/3 animate-step-line bg-gradient-to-r from-transparent via-green-400 to-transparent" />
             </div>
             <StepCard
@@ -198,47 +197,12 @@ export default function HomePage() {
       </section>
 
       {/* Register / Login */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-10 ">
-            <Trophy size={40} className="mb-5" />
+      {!currentUser?.uid ? <AnnonymousUserHome /> : <AuthenticatedUserHome />}
 
-            <h3 className="text-3xl font-black">Register Your Team</h3>
-
-            <p className="mt-3 text-slate-500">
-              Start booking arena time and managing your schedule online.
-            </p>
-
-            <Link
-              href="/auth"
-              className="mt-8 inline-flex rounded-lg bg-black px-6 transition hover: hover:-translate-y-0.5  py-4 font-semibold text-white">
-              Register Team
-            </Link>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-10 ">
-            <Users size={40} className="mb-5" />
-
-            <h3 className="text-3xl font-black">Team Login</h3>
-
-            <p className="mt-3 text-slate-500">
-              Access your dashboard and manage bookings.
-            </p>
-
-            <Link
-              href="/auth"
-              className="mt-8 inline-flex rounded-lg transition hover: hover:-translate-y-0.5  border px-6 py-4 font-semibold">
-              Login
-            </Link>
-          </div>
-        </div>
-      </section>
-      <Footer/>
+      <Footer />
     </main>
   );
 }
-
-
 
 function TrustBadge({ text }: { text: string }) {
   return (

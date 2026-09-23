@@ -30,7 +30,7 @@ const links = [
 
 const secondary_links = [
   { icon: CreditCard, label: "Payments", link: "/dashboard/payments" },
-  { icon: FileBarChart2, label: "Preferences", link: "/dashboard/reports" },
+  { icon: FileBarChart2, label: "Preferences", link: "/dashboard/preferences" },
   { icon: Settings, label: "Settings", link: "/dashboard/settings" },
 ];
 

@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
 
-const Drawer = ({ Component }: { Component: any }) => {
+const Drawer = ({
+  Component,
+  elementId = "my-drawer-5",
+}: {
+  Component: any;
+  elementId?: string;
+}) => {
   return (
     <div className="drawer-side z-50">
       <label
-        htmlFor="my-drawer-5"
+        htmlFor={elementId}
         aria-label="close sidebar"
         className="drawer-overlay"></label>
 

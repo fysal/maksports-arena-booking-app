@@ -3,7 +3,7 @@
 
 import BookingHandler from "@/app/lib/booking_handler";
 import { SettingsContext } from "@/app/lib/context";
-import { BookingStatus, BookingType } from "@/app/types/booking";
+import { BookingStatus, BookingType, ISlot } from "@/app/types/booking";
 import {
   BadgeCheck,
   CalendarDays,
@@ -21,11 +21,6 @@ export type IFormDataType = {
   admin_note?: string;
   status: BookingStatus;
   duration: number;
-  startTime: string;
-  endTime: string;
-};
-
-type ISlot = {
   startTime: string;
   endTime: string;
 };

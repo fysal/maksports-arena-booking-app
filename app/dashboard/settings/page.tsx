@@ -193,7 +193,7 @@ export default function AdminSettingsPage() {
 
   async function handleSave() {
     try {
-      const settings: Settings = {
+      const newSettings = {
         slotPricing,
         operatingHours: {
           openingTime,
@@ -221,7 +221,7 @@ export default function AdminSettingsPage() {
 
       setIsSaving(true);
 
-      const result = await AdminHelper.updateSettings(settings);
+      const result = await AdminHelper.updateSettings(newSettings as Settings);
 
       toast.success(result.message, {
         position: "bottom-left",

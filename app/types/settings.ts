@@ -1,4 +1,3 @@
-
 export interface SlotPricing {
   id: string;
   duration: number;
@@ -7,28 +6,31 @@ export interface SlotPricing {
 }
 
 export type Settings = {
-
-    slotPricing : SlotPricing [],
-      operatingHours: {
-        openingTime: string,
-        closingTime: string,
-      },
-      bookingRules: {
-        advanceBookingDays: number,
-        minimumBookingHours:number,
-      },
-      cancellation: {
-        allowCancellation: boolean,
-        cancellationHours: number | string,
-      },
-      payments: {
-        requirePayment:boolean,
-      },
-      notifications: {
-        bookingNotifications: boolean,
-        emailNotifications:boolean,
-      },
-      system: {
-        maintenanceMode: boolean,
-      },
-}
+  slotPricing: SlotPricing[];
+  operatingHours: {
+    openingTime: string;
+    closingTime: string;
+  };
+  bookingRules: {
+    advanceBookingDays: number;
+    minimumBookingHours: number;
+  };
+  cancellation: {
+    allowCancellation: boolean;
+    cancellationHours: number | string;
+  };
+  payments: {
+    requirePayment: boolean;
+  };
+  notifications: {
+    bookingNotifications: boolean;
+    emailNotifications: boolean;
+  };
+  system: {
+    maintenanceMode: boolean;
+  };
+  preferences: {
+    email: string;
+    phone: string;
+  };
+};

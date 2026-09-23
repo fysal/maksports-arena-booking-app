@@ -57,9 +57,15 @@ export type TeamMember = {
   captain?: boolean;
 };
 
-type ContactPerson = {
+export type ContactPerson = {
   name?: string;
   phone: string;
   email?: string | null;
   uid?: string | null;
+};
+
+export type ISlot = {
+  startTime: string;
+  endTime: string;
+  availble: boolean;
 };

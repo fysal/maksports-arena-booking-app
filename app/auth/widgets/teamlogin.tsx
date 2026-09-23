@@ -26,10 +26,8 @@ const TeamLogin = () => {
 
   const [passwordVisible, setPasswordVisible] = React.useState<boolean>(false);
 
-
   const onHandleSubmit: SubmitHandler<loginData> = async (data) => {
     await loginUser(data.email, data.password);
-   
   };
 
   return (

@@ -1,6 +1,7 @@
 export type UserRole = "team" | "admin" | "customer";
 
 type userStatusType = "active" | "blocked";
+
 export interface UserProfile {
   uid: string;
   email: string;
@@ -31,5 +32,5 @@ export type currentUserType = {
   isAnonymous: boolean;
   refreshToken?: string;
   emailVerified?: boolean;
-  status?: userStatusType
+  status?: userStatusType;
 };

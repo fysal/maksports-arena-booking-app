@@ -51,7 +51,7 @@ body {
   @apply text-[16px] font-bold text-slate-600;
 }
 .slot-years {
-  @apply text-8xl font-bold text-gray-300 text-shadow-sm text-shadow-slate-300;
+  @apply text-7xl lg:text-7xl font-bold text-gray-600 lg:text-gray-300 text-shadow-sm text-shadow-slate-300;
 }
 
 .spn {
@@ -61,10 +61,6 @@ body {
 .widget-label {
   @apply text-lg font-semibold;
 }
-
-
-
-
 
 @keyframes step-line {
   0% {

@@ -192,9 +192,9 @@ export default function BookingsPage() {
         {/* Table */}
 
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white ">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
+          <div className="w-full overflow-x-auto rounded-xl">
+            <table className="min-w-[1100px] w-full">
+              <thead className="sticky top-0 z-10">
                 <tr className="border-b border-slate-200 bg-slate-50 text-left text-sm font-medium text-slate-500">
                   {[
                     "#",
@@ -207,7 +207,11 @@ export default function BookingsPage() {
                     "Created at",
                     "Actions",
                   ].map((t_head: string, idx: number) => (
-                    <th className="px-6 py-4 capitalize" key={idx}>
+                    <th
+                      className={`whitespace-nowrap px-4 py-4 sm:px-6 ${
+                        idx === 0 || idx === 8 ? "text-center" : ""
+                      }`}
+                      key={idx}>
                       {t_head}
                     </th>
                   ))}
@@ -218,37 +222,47 @@ export default function BookingsPage() {
                 {filteredBookings?.map((booking: BookingType, idx: number) => (
                   <tr
                     key={booking.bookingId}
-                    className="border-b border-slate-100 text-sm hover:bg-slate-50">
-                    <td align="center" className="font-medium">
+                    className="border-b border-slate-100 text-sm transition-colors hover:bg-slate-50">
+                    <td className="whitespace-nowrap px-4 py-3 text-center font-medium text-slate-600 sm:px-6">
                       {idx + 1}
                     </td>
-                    <td className="px-6 py-2 capitalize">{booking.teamName}</td>
-                    <td className="px-6 py-2">
+
+                    <td className="whitespace-nowrap px-4 py-3 capitalize sm:px-6">
+                      {booking.teamName}
+                    </td>
+
+                    <td className="whitespace-nowrap px-4 py-3 sm:px-6">
                       {booking?.contactInformation?.name}
                     </td>
-                    <td className="px-6 py-2">
+
+                    <td className="whitespace-nowrap px-4 py-3 sm:px-6">
                       {new Date(booking.date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-2">
+
+                    <td className="whitespace-nowrap px-4 py-3 sm:px-6">
                       {booking.startTime} - {booking.endTime}
                     </td>
-                    <td className="px-6 py-2 font-medium">
+
+                    <td className="whitespace-nowrap px-4 py-3 font-medium sm:px-6">
                       UGX {booking.fee.toLocaleString()}
                     </td>
-                    <td className="px-6 py-2 capitalize">
+
+                    <td className="whitespace-nowrap px-4 py-3 capitalize sm:px-6">
                       <StatusBadge status={booking?.status.toString()} />
                     </td>
-                    <td className="px-6 py-2 capitalize">
+
+                    <td className="whitespace-nowrap px-4 py-3 capitalize sm:px-6">
                       {(booking.createdAt instanceof Timestamp
                         ? booking.createdAt.toDate()
                         : new Date(booking.createdAt!)
                       ).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-2">
+
+                    <td className="px-4 py-3 sm:px-6">
                       <div className="flex justify-center">
                         <button
                           onClick={() => openDrawer(booking)}
-                          className="rounded-xl p-2 hover:bg-slate-100 cursor-pointer">
+                          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl transition-colors hover:bg-slate-100">
                           <MoreHorizontal size={18} />
                         </button>
                       </div>

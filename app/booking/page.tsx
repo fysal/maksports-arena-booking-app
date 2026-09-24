@@ -15,7 +15,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-
 import BookingHandler from "../lib/booking_handler";
 import { generateRandomIds } from "../lib/utils/utils";
 import { useRouter } from "next/navigation";
@@ -173,7 +172,7 @@ export default function BookPage() {
   return (
     <main className="min-h-screen bg-gray-50 ">
       <Navbar />
-      <div className="mx-auto max-w-7xl py-12 relative">
+      <div className="mx-5 lg:mx-auto max-w-7xl py-12 relative">
         {settings &&
           (settings.system.maintenanceMode ? (
             <MaintenancePage />
@@ -184,7 +183,7 @@ export default function BookPage() {
                   MAK Sports Arena
                 </p>
 
-                <h1 className="mt-2 text-4xl font-bold">
+                <h1 className="mt-2 text-3xl lg:text-4xl font-bold">
                   Book your playing time
                 </h1>
 
@@ -254,9 +253,9 @@ export default function BookPage() {
                   </div>
                 </div>
               ) : activeScreen === 1 ? (
-                <div className="grid gap-8 lg:grid-cols-3">
+                <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
                   <div className="rounded-xl bg-card p-8 bg-slate-100/10 border border-slate-300">
-                    <div className=" flex-col gap-8 md:flex-row md:items-center">
+                    <div className="flex-col gap-8 md:flex-row md:items-center">
                       <div className="mb-6">
                         <h3 className="text-2xl font-bold">Booking Summary</h3>
 
@@ -264,7 +263,7 @@ export default function BookPage() {
                           Review your selected date and playing slot.
                         </p>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex items-center gap-6 lg:gap-0 justify-center lg:justify-between">
                         {/* Date Card */}
                         <div className="flex-shrink-0 mb-5">
                           <div className="flex items-center gap-2 mb-3">
@@ -280,7 +279,7 @@ export default function BookPage() {
                             </div>
 
                             <div className="flex flex-1 flex-col items-center justify-center">
-                              <span className="text-7xl font-black leading-none">
+                              <span className="text-5xl lg:text-7xl font-black leading-none">
                                 {date?.getDate()}
                               </span>
 
@@ -292,7 +291,7 @@ export default function BookPage() {
                             </div>
                           </div>
                         </div>
-                        <div>
+                        <div className="w-full">
                           <div className="mt-8" />
                           <div className="flex flex-col justify-center items-center gap-0">
                             <span className="slot-years">
@@ -340,7 +339,7 @@ export default function BookPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 lg:col-span-2">
                     {" "}
                     <BookingForm
                       onSubmit={captureFormData}
@@ -360,7 +359,7 @@ export default function BookPage() {
                   onProceedToPayment={onProceedToPayment}
                 />
               )}
-              <div className="flex items-center justify-center gap-5 py-20">
+              <div className="flex items-center justify-center gap-5 py-10 lg:py-20">
                 {activeScreen > 0 && (
                   <button
                     onClick={handlePrevious}

@@ -16,9 +16,9 @@ export function DashboardHeader({ showForm = false }: { showForm?: boolean }) {
   }
 
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex flex-col lg:flex-row flex-col-reverse items-center justify-between">
       {showForm ? (
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-md mt-5 lg:mt-0">
           <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
@@ -26,7 +26,7 @@ export function DashboardHeader({ showForm = false }: { showForm?: boolean }) {
 
           <input
             placeholder="Search anything..."
-            className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-12"
+            className="h-10 w-full  rounded-lg border border-slate-200 bg-white pl-12"
           />
         </div>
       ) : (

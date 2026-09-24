@@ -32,8 +32,8 @@ function StatusBadge({ status }: { status: string }) {
 
   return (
     <span
-      className={`rounded-full px-3 py-1 text-xs font-medium ${
-        styles[status as keyof typeof styles]
+      className={`inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
+        styles[status as keyof typeof styles] ?? "bg-slate-100 text-slate-600"
       }`}>
       {status}
     </span>
@@ -57,11 +57,11 @@ export default function BookingsPage() {
   const filteredBookings = useMemo(() => {
     return [...bookings]
       .filter((booking) => {
+        const searchValue = search.toLowerCase();
+
         const matchesSearch =
-          booking.teamName?.toLowerCase().includes(search.toLowerCase()) ||
-          booking.contactInformation.name
-            ?.toLowerCase()
-            .includes(search.toLowerCase());
+          booking.teamName?.toLowerCase().includes(searchValue) ||
+          booking.contactInformation.name?.toLowerCase().includes(searchValue);
 
         const matchesStatus =
           status === "all" ||
@@ -80,7 +80,7 @@ export default function BookingsPage() {
             ? b.createdAt.toMillis()
             : new Date(b.createdAt!).getTime();
 
-        return bTime - aTime; // Newest first
+        return bTime - aTime;
       });
   }, [search, status, bookings]);
 
@@ -89,27 +89,31 @@ export default function BookingsPage() {
   };
 
   const closeDrawer = (): void => {
-    if (toggleRef.current) toggleRef.current.checked = false;
+    if (toggleRef.current) {
+      toggleRef.current.checked = false;
+    }
   };
 
   useEffect(() => {
-    if (toggleRef.current !== null)
+    if (toggleRef.current !== null) {
       toggleRef.current.checked = !toggleRef.current.checked;
+    }
   }, [bookingInEdit?.bookingId]);
 
   return (
-    <div className="drawer drawer-end">
+    <div className="drawer drawer-end w-full max-w-full overflow-x-hidden">
       <input
         id="editing-drawer"
         ref={toggleRef}
         type="checkbox"
         className="drawer-toggle"
       />
-      <div className="space-y-6 ">
-        {/* Header */}
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
+      {/* Main Content */}
+      <div className="drawer-content min-w-0 max-w-full space-y-6 overflow-x-hidden">
+        {/* Header */}
+        <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
             <h1 className="text-3xl font-bold text-slate-900">Bookings</h1>
 
             <p className="mt-1 text-slate-500">
@@ -117,14 +121,13 @@ export default function BookingsPage() {
             </p>
           </div>
 
-          <button className="rounded-lg text-sm bg-green-700 px-4 py-2 font-medium text-white transition hover:bg-green-700">
+          <button className="w-fit shrink-0 rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-600">
             Create Booking
           </button>
         </div>
 
         {/* Stats */}
-
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid min-w-0 gap-6 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
             title="Today's Bookings"
             value={todaysScheduleCount}
@@ -151,10 +154,10 @@ export default function BookingsPage() {
         </div>
 
         {/* Filters */}
-
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <div className="flex flex-col gap-4 lg:flex-row">
-            <div className="relative flex-1">
+        <div className="w-full min-w-0 max-w-full rounded-lg border border-slate-200 bg-white p-5">
+          <div className="flex min-w-0 flex-col gap-4 lg:flex-row">
+            {/* Search */}
+            <div className="relative min-w-0 flex-1">
               <Search
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                 size={18}
@@ -164,15 +167,17 @@ export default function BookingsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search bookings..."
-                className="h-12 w-full rounded-lg border border-slate-200 pl-11 outline-none focus:border-green-500"
+                className="h-12 w-full min-w-0 rounded-lg border border-slate-200 pl-11 pr-4 outline-none transition focus:border-green-500 focus:ring-1 focus:ring-green-500"
               />
             </div>
 
+            {/* Status */}
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="h-12 rounded-lg text-sm border border-slate-200 px-4 capitalize">
+              className="h-12 shrink-0 rounded-lg border border-slate-200 px-4 text-sm capitalize outline-none focus:border-green-500">
               <option value="all">All Statuses</option>
+
               {["confirmed", "paid", "pending", "failed", "canceled"].map(
                 (option: string, idx: number) => (
                   <option key={idx} value={option}>
@@ -182,7 +187,8 @@ export default function BookingsPage() {
               )}
             </select>
 
-            <button className="flex h-12 items-center text-sm gap-2 rounded-lg border border-slate-200 px-5">
+            {/* More Filters */}
+            <button className="flex h-12 shrink-0 items-center gap-2 rounded-lg border border-slate-200 px-5 text-sm transition hover:bg-slate-50">
               <Filter size={18} />
               More Filters
             </button>
@@ -190,11 +196,14 @@ export default function BookingsPage() {
         </div>
 
         {/* Table */}
-
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white ">
-          <div className="w-full overflow-x-auto rounded-xl">
-            <table className="min-w-[1100px] w-full">
-              <thead className="sticky top-0 z-10">
+        <div className="w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
+          {/* 
+            IMPORTANT:
+            This is the ONLY element that should scroll horizontally.
+          */}
+          <div className="w-full min-w-0 max-w-full overflow-x-auto">
+            <table className="min-w-[1100px] w-full border-collapse">
+              <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-left text-sm font-medium text-slate-500">
                   {[
                     "#",
@@ -208,10 +217,10 @@ export default function BookingsPage() {
                     "Actions",
                   ].map((t_head: string, idx: number) => (
                     <th
+                      key={idx}
                       className={`whitespace-nowrap px-4 py-4 sm:px-6 ${
                         idx === 0 || idx === 8 ? "text-center" : ""
-                      }`}
-                      key={idx}>
+                      }`}>
                       {t_head}
                     </th>
                   ))}
@@ -223,34 +232,42 @@ export default function BookingsPage() {
                   <tr
                     key={booking.bookingId}
                     className="border-b border-slate-100 text-sm transition-colors hover:bg-slate-50">
+                    {/* Number */}
                     <td className="whitespace-nowrap px-4 py-3 text-center font-medium text-slate-600 sm:px-6">
                       {idx + 1}
                     </td>
 
+                    {/* Team */}
                     <td className="whitespace-nowrap px-4 py-3 capitalize sm:px-6">
                       {booking.teamName}
                     </td>
 
+                    {/* Captain */}
                     <td className="whitespace-nowrap px-4 py-3 sm:px-6">
                       {booking?.contactInformation?.name}
                     </td>
 
+                    {/* Match Day */}
                     <td className="whitespace-nowrap px-4 py-3 sm:px-6">
                       {new Date(booking.date).toLocaleDateString()}
                     </td>
 
+                    {/* Time Slot */}
                     <td className="whitespace-nowrap px-4 py-3 sm:px-6">
                       {booking.startTime} - {booking.endTime}
                     </td>
 
+                    {/* Amount */}
                     <td className="whitespace-nowrap px-4 py-3 font-medium sm:px-6">
                       UGX {booking.fee.toLocaleString()}
                     </td>
 
+                    {/* Status */}
                     <td className="whitespace-nowrap px-4 py-3 capitalize sm:px-6">
-                      <StatusBadge status={booking?.status.toString()} />
+                      <StatusBadge status={booking?.status?.toString()} />
                     </td>
 
+                    {/* Created At */}
                     <td className="whitespace-nowrap px-4 py-3 capitalize sm:px-6">
                       {(booking.createdAt instanceof Timestamp
                         ? booking.createdAt.toDate()
@@ -258,6 +275,7 @@ export default function BookingsPage() {
                       ).toLocaleDateString()}
                     </td>
 
+                    {/* Actions */}
                     <td className="px-4 py-3 sm:px-6">
                       <div className="flex justify-center">
                         <button
@@ -274,13 +292,30 @@ export default function BookingsPage() {
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Empty State */}
+        {filteredBookings?.length === 0 && (
+          <div className="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+              <CalendarDays className="text-slate-400" size={22} />
+            </div>
+
+            <h3 className="mt-4 font-semibold text-slate-900">
+              No bookings found
+            </h3>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Try adjusting your search or filter.
+            </p>
+          </div>
+        )}
       </div>
+
+      {/* Edit Booking Drawer */}
       {bookingInEdit?.bookingId && (
         <Drawer
           Component={
             <EditBookingForm
-              booking={bookingInEdit!}
+              booking={bookingInEdit}
               closeDrawer={closeDrawer}
             />
           }

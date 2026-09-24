@@ -42,7 +42,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                 setCollapsed={setCollapsed}
               />
               <main className="flex-1 p-6">
-                <header className="relative mb-3 left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 lg:hidden">
+                <header className="relative mb-6 left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 lg:hidden">
                   <Link href="/dashboard">
                     <Image
                       src="/images/logo.png"

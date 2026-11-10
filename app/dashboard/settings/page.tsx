@@ -284,7 +284,7 @@ export default function AdminSettingsPage() {
 
       {/* Overview */}
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 lg:gap-5 grid-cols-2 lg:grid-cols-4">
         <SettingsStatCard
           label={"Active Slot Types"}
           value={enabledSlots.length}

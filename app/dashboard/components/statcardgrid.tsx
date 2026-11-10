@@ -2,7 +2,6 @@
 import { CalendarCheck2, DollarSign, Users, Trophy } from "lucide-react";
 import { StatCard } from "./statcards";
 
-
 export function StatsOverview({
   todaysScheduleCount = 0,
   revenue = "UGX 1.2M",
@@ -10,17 +9,14 @@ export function StatsOverview({
   occupancy = 18,
 }: {
   todaysScheduleCount?: number;
-    revenue?: string;
-    teams?: number | string;
-    occupancy?:string | number
+  revenue?: string;
+  teams?: number | string;
+  occupancy?: string | number;
 }) {
   const iconSize = 20;
 
-
-
-
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       <StatCard
         title="Bookings Today"
         value={todaysScheduleCount}
@@ -30,7 +26,7 @@ export function StatsOverview({
 
       <StatCard
         title="Revenue Today"
-        value={ revenue}
+        value={revenue}
         trend="+8%"
         color="#D5B101"
         icon={<DollarSign size={iconSize} />}
@@ -38,7 +34,7 @@ export function StatsOverview({
 
       <StatCard
         title="Active Teams"
-        value={ teams }
+        value={teams}
         trend="+2"
         color="#6410CB"
         icon={<Users size={iconSize} />}

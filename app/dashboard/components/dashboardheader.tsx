@@ -33,10 +33,10 @@ export function DashboardHeader({ showForm = false }: { showForm?: boolean }) {
         <div />
       )}
 
-      <div className="flex items-center gap-4">
+      <div className="flex w-full lg:w-auto items-center justify-between lg:justify-center gap-4">
         <Link
           href="/"
-          className="text-sm flex gap-2 items-center hover:bg-slate-200 p-2 rounded">
+          className="text-sm flex flex-1 lg:flex-auto gap-2 items-center hover:bg-slate-200 p-2 rounded">
           <ArrowLeft size={15} /> <span>Go Home</span>
         </Link>
         <button className="flex h-12 items-center gap-2 rounded-lg border border-slate-200 text-sm bg-white px-4">

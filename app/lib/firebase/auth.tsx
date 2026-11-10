@@ -2,6 +2,7 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
@@ -17,6 +18,7 @@ import {
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { generateRandomIds } from "../utils/utils";
+import { Auth } from "firebase-admin/auth";
 
 type registerTeamInfo = {
   teamName: string;
@@ -59,6 +61,26 @@ export async function loginUser(email: string, password: string) {
     console.log(error);
 
     toast.error("Failed to sign in");
+  }
+}
+
+export async function forgotPassword(email: string) {
+  try {
+    await sendPasswordResetEmail(auth, email, {
+      url: `${window.location.origin}/auth?act=login`,
+      handleCodeInApp: false,
+    });
+
+    return {
+      success: true,
+      message: `Password reset instructions have been sent to  ${email}. Login to the email to take the next step. `,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: "Failed to reset email. Check the email entered and try again",
+      code: JSON.stringify(error),
+    };
   }
 }
 
@@ -129,8 +151,6 @@ export async function loadUserProfile(uid: string) {
     throw error;
   }
 }
-
-
 
 export async function loadTeamInformaition(uid: string) {
   try {

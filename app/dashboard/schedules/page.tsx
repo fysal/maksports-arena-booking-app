@@ -13,9 +13,6 @@ import {
 } from "lucide-react";
 import { addDays, addWeeks, format, startOfWeek } from "date-fns";
 import { StatCard } from "../components/statcards";
-import ArenaControls from "./components/arenacontrols";
-import BlockArena from "./components/blockarena";
-import ScheduleLegends from "./components/schedulelegends";
 import {
   BookingsContext,
   SettingsContext,
@@ -171,7 +168,7 @@ export default function SchedulePage() {
 
             {/* Stats */}
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 lg:gap-6 grid-cols-2 lg:grid-cols-4">
               <StatCard
                 title="Bookings Today"
                 value="24"

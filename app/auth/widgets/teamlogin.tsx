@@ -90,7 +90,7 @@ const TeamLogin = () => {
           </label>
 
           <Link
-            href="/forgot-password"
+            href="/auth/forgot-password"
             className="text-sm font-medium text-green-600 hover:text-green-700">
             Forgot Password?
           </Link>

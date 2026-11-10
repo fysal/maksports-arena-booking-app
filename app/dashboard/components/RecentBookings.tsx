@@ -1,6 +1,6 @@
 "use client";
-import { useContext, useMemo } from "react";
 
+import { useContext, useMemo } from "react";
 import { BookingsContext } from "@/app/lib/context";
 import { currencyConverter } from "@/app/lib/utils/utils";
 import StatusBadge from "@/app/team-management/components/StatusBadge";
@@ -13,6 +13,7 @@ export function RecentBookings({ className }: { className?: string }) {
 
   const sortedBookings = useMemo(() => {
     if (!bookings) return;
+
     return [...bookings]
       .sort((a, b) => {
         const aTime =
@@ -25,58 +26,100 @@ export function RecentBookings({ className }: { className?: string }) {
             ? b.createdAt.toMillis()
             : new Date(b.createdAt!).getTime();
 
-        return bTime - aTime; // Newest first
+        return bTime - aTime;
       })
       .slice(0, 5);
   }, [bookings]);
 
   return (
-    <div className={className}>
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-2">
-          <h3 className="widget-label">Recent Bookings</h3>
+    <div className={`min-w-0 max-w-full ${className ?? ""}`}>
+      <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+        {/* Header */}
+        <div className="mb-6 flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+          <h3 className="widget-label whitespace-nowrap">Recent Bookings</h3>
 
           <Link
             href="/dashboard/bookings"
-            className="text-slate-600 text-xs border border-slate-200 py-2 px-4 rounded-lg cursor-pointer hover:bg-slate-800 hover:text-white ">
+            className="shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 transition hover:bg-slate-800 hover:text-white sm:px-4">
             View All
           </Link>
         </div>
 
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-slate-200 text-left text-sm text-slate-500">
-              {["Team", "Match Day", "Time Slot", "Status", "Amount", "Action"].map(
-                (head: string, idx: number) => (
-                  <th className="pb-2" key={idx}>
+        {/* 
+          Only this container is horizontally scrollable.
+          The page itself will not overflow.
+        */}
+        <div className="w-full min-w-0 max-w-full overflow-x-auto">
+          <table className="w-full min-w-[700px] border-collapse">
+            <thead>
+              <tr className="border-b border-slate-200 text-left text-sm text-slate-500">
+                {[
+                  "Team",
+                  "Match Day",
+                  "Time Slot",
+                  "Status",
+                  "Amount",
+                  "Action",
+                ].map((head: string, idx: number) => (
+                  <th
+                    key={idx}
+                    className="whitespace-nowrap px-3 pb-3 font-medium first:pl-0 last:pr-0">
                     {head}
                   </th>
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {sortedBookings?.map((booking) => (
-              <tr
-                key={booking?.bookingId}
-                className="py-4 text-[13px] font-medium border-b border-slate-100">
-                {/* <td className="py-2">{booking?.bookingId}</td> */}
-                <td className="py-2 capitalize">{booking?.teamName}</td>
-                <td>{new Date(booking?.date).toLocaleDateString()}</td>
-                <td>
-                  {booking?.startTime} - {booking.endTime}
-                </td>
-                <td>
-                  <StatusBadge status={booking?.status} />
-                </td>
-                <td>{currencyConverter(Number(booking?.fee))}</td>
-                <td align="center">
-                  <Ellipsis size={13} />
-                </td>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {sortedBookings?.map((booking) => (
+                <tr
+                  key={booking?.bookingId}
+                  className="border-b border-slate-100 text-[13px] font-medium transition-colors hover:bg-slate-50">
+                  {/* Team */}
+                  <td className="whitespace-nowrap py-3 pr-6 capitalize">
+                    {booking?.teamName}
+                  </td>
+
+                  {/* Match Day */}
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {new Date(booking?.date).toLocaleDateString()}
+                  </td>
+
+                  {/* Time Slot */}
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {booking?.startTime} - {booking?.endTime}
+                  </td>
+
+                  {/* Status */}
+                  <td className="whitespace-nowrap px-3 py-3">
+                    <StatusBadge status={booking?.status} />
+                  </td>
+
+                  {/* Amount */}
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {currencyConverter(Number(booking?.fee))}
+                  </td>
+
+                  {/* Action */}
+                  <td className="px-3 py-3 text-center">
+                    <button
+                      type="button"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">
+                      <Ellipsis size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Optional empty state */}
+        {sortedBookings?.length === 0 && (
+          <div className="py-8 text-center text-sm text-slate-500">
+            No recent bookings.
+          </div>
+        )}
       </div>
     </div>
   );

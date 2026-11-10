@@ -127,7 +127,7 @@ export default function BookingsPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid min-w-0 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid min-w-0 gap-3 lg:gap-6 grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Today's Bookings"
             value={todaysScheduleCount}

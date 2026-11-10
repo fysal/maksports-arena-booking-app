@@ -129,7 +129,7 @@ export default function TeamsPage() {
 
         {/* Statistics */}
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 lg:gap-6 grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Total Teams"
             value={teams?.length}

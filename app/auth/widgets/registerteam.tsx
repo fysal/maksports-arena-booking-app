@@ -14,9 +14,12 @@ const schema = z
     contactPerson: z.string("Contact person name is required").min(6, {
       message: "Name must be longer than that",
     }),
-    phoneNumber: z.string().min(10, {
-      message: "Enter a valid Phone Number",
-    }),
+    phoneNumber: z
+      .string()
+      .min(10, {
+        message: "Enter a valid Phone Number",
+      })
+      .startsWith("+256"),
 
     email: z.string().email("Enter a valid email"),
     password: z.string().min(6, {

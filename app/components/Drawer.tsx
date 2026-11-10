@@ -14,7 +14,9 @@ const Drawer = ({
         aria-label="close sidebar"
         className="drawer-overlay"></label>
 
-      <div className="menu bg-base-200 min-h-full w-xl p-4">{Component}</div>
+      <div className="menu bg-base-200 min-h-full w-full lg:w-xl p-4">
+        {Component}
+      </div>
     </div>
   );
 };

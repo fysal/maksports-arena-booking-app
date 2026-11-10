@@ -22,7 +22,6 @@ export default function ScheduleRow({ booking }: { booking: BookingType }) {
           </span>
 
           <span className="text-xl font-black">
-            {" "}
             {new Date(booking.date).toLocaleString("en-us", { day: "2-digit" })}
           </span>
         </div>

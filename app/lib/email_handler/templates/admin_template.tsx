@@ -202,6 +202,14 @@ export default function admin_email_template(data: BookingType) {
                     UGX ${fee}
                   </td>
                 </tr>
+                         <tr>
+                  <td style="padding:13px 15px;font-size:14px;color:#6b7280;border-top:1px solid #e5e7eb;">
+                    Pitch
+                  </td>
+                  <td style="padding:13px 15px;font-size:15px;font-weight:bold;color:#101b3c;border-top:1px solid #e5e7eb;">
+                     ${data.pitch.name}
+                  </td>
+                </tr>
 
                 <tr>
                   <td style="padding:13px 15px;font-size:14px;color:#6b7280;border-top:1px solid #e5e7eb;">

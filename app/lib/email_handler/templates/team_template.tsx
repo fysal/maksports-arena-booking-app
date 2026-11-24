@@ -323,6 +323,27 @@ export default function team_email_template(data: BookingType) {
                   </td>
                 </tr>
 
+                                <!-- Pitch -->
+                                      <tr>
+                  <td style="padding: 12px 36px;">
+                    <table width="100%" cellpadding="0" cellspacing="0"
+                      role="presentation">
+                      <tr>
+                        <td style="color: #667085; font-size: 13px;">
+                          Pitch
+                        </td>
+                        <td align="right" style="
+                          color: #101b3c;
+                          font-size: 13px;
+                          font-weight: 600;
+                        ">
+                          ${data.pitch.name}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
               </table>
 
               <!-- Customer Information -->

@@ -1,13 +1,14 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
+import { z } from "zod";
 export interface BookingFormData {
   teamName: string;
   contactPerson: string;
   phone: string;
   email: string;
-  number_of_players?: number;
+  number_of_players?: number | string;
   notes?: string;
 }
 
@@ -16,6 +17,21 @@ interface BookingFormProps {
   loading?: boolean;
   onSubmit: (data: BookingFormData) => void;
 }
+
+const schema = z.object({
+  teamName: z.string().min(3, "Please enter a valid team name"),
+  phone: z.string().regex(/^\+256(?!0)\d{9}$/, {
+    message: "Enter a valid phone number (e.g. +256772879099)",
+  }),
+  contactPerson: z.string().min(6, {
+    message: "Please enter a valid first name and last name",
+  }),
+  email: z.email("Enter a valid email address"),
+  number_of_players: z.string(),
+  notes: z.string(),
+});
+
+type FormFields = z.infer<typeof schema>;
 
 export default function BookingForm({
   defaultValues,
@@ -26,8 +42,13 @@ export default function BookingForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<BookingFormData>({
-    defaultValues,
+  } = useForm<FormFields>({
+    defaultValues: {
+      ...defaultValues,
+      number_of_players: defaultValues?.number_of_players?.toString(),
+    },
+
+    resolver: zodResolver(schema),
   });
 
   return (
@@ -52,9 +73,7 @@ export default function BookingForm({
           <input
             type="text"
             placeholder="e.g. Kampala United FC"
-            {...register("teamName", {
-              required: "Team name is required",
-            })}
+            {...register("teamName")}
             className="w-full rounded-lg border px-4 py-3 outline-none transition focus:border-black"
           />
 
@@ -74,9 +93,7 @@ export default function BookingForm({
           <input
             type="text"
             placeholder="Full name"
-            {...register("contactPerson", {
-              required: "Contact person is required",
-            })}
+            {...register("contactPerson")}
             className="w-full rounded-lg border px-4 py-3 outline-none transition focus:border-black"
           />
 
@@ -96,10 +113,8 @@ export default function BookingForm({
 
           <input
             type="tel"
-            placeholder="+256 700 000000"
-            {...register("phone", {
-              required: "Phone number is required",
-            })}
+            placeholder="+256700000000"
+            {...register("phone")}
             className="w-full rounded-lg border px-4 py-3 outline-none transition focus:border-black"
           />
 
@@ -117,13 +132,7 @@ export default function BookingForm({
           <input
             type="email"
             placeholder="team@example.com"
-            {...register("email", {
-              required: "Email address is required",
-              pattern: {
-                value: /^\S+@\S+\.\S+$/,
-                message: "Enter a valid email address",
-              },
-            })}
+            {...register("email")}
             className="w-full rounded-lg border px-4 py-3 outline-none transition focus:border-black"
           />
 

@@ -4,6 +4,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-primary: var(--color-green-600);
 }
 
 @theme inline {
@@ -15,8 +16,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
   }
 }
 
@@ -28,6 +29,10 @@ body {
 
 .text-primary {
   color: var(--foreground);
+}
+
+.bg-primary {
+  background-color: var(--color-green-600);
 }
 
 .slot-time {

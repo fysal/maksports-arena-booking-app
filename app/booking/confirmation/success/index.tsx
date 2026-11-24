@@ -11,11 +11,13 @@ import {
   Copy,
   Home,
   MapPin,
+  Printer,
   Share2,
   Trophy,
   Users,
 } from "lucide-react";
 import { BookingType } from "@/app/types/booking";
+import { printBooking } from "@/app/lib/utils/printBooking";
 
 type ConfettiPiece = {
   id: number;
@@ -34,7 +36,6 @@ export default function BookingSuccessPage({
   const [copied, setCopied] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [showPopConfetti, setShowPopConfetti] = useState(true);
-
 
   /*
    * Generate the falling confetti once.
@@ -233,8 +234,8 @@ export default function BookingSuccessPage({
           </h1>
 
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-500">
-            Your arena booking has been successfully confirmed. Get your team
-            ready — it&apos;s game time!
+            Your arena booking has been successfully confirmed.
+            <br /> Get your team ready - it&apos;s game time!
           </p>
         </div>
 
@@ -404,6 +405,15 @@ export default function BookingSuccessPage({
                     UGX {booking?.fee?.toLocaleString()}
                   </p>
                 </div>
+              </div>
+              <div className="flex justify-end  border-slate-100 ">
+                <button
+                  type="button"
+                  onClick={() => printBooking(booking)}
+                  className="cursor-pointer flex mt-6 items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                  <Printer className="h-4 w-4" />
+                  Print Receipt
+                </button>
               </div>
             </div>
           </div>

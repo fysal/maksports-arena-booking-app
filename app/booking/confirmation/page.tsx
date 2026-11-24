@@ -2,6 +2,8 @@ import React from "react";
 import BookingSuccessPage from "./success";
 import { redirect } from "next/navigation";
 import BookingFailedPage from "./failed/page";
+import EmailHandler from "@/app/lib/email_handler";
+import { BookingType } from "@/app/types/booking";
 
 interface ConfirmationPageProps {
   searchParams: Promise<{
@@ -31,6 +33,17 @@ const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
   const data = await response.json();
 
   if (response.status === 200) {
+    //Check if notifications already sent
+    //If not send it and update the order
+    //send email here
+
+    const payload: BookingType = data.booking;
+
+    Promise.all([
+      EmailHandler.notify_admin({ payload }),
+      EmailHandler.notify_team({ booking: payload }),
+    ]);
+
     return <BookingSuccessPage booking={data.booking} />;
   }
   return <BookingFailedPage />;

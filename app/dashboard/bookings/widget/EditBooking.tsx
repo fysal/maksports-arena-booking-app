@@ -49,6 +49,7 @@ export default function EditBookingForm({
       closingTime: settings!.operatingHours.closingTime,
       dateString,
       duration: booking.duration,
+      pitchId: booking.pitch.id,
     });
 
     if (data) setSlots(data.slots);

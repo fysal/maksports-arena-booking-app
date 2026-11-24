@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Clock3, MapPin, Minus, Plus } from "lucide-react";
+import { Clock3, MapPin, Minus, Plus, PrinterCheck } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import { BookingType } from "@/app/types/booking";
 import { useState } from "react";
+import { printBooking } from "@/app/lib/utils/printBooking";
+import BookingCardDetails from "./BookingCardDetails";
 
 export default function BookingCard({ booking }: { booking: BookingType }) {
   const details = {
@@ -88,17 +90,7 @@ export default function BookingCard({ booking }: { booking: BookingType }) {
       : "max-h-0 opacity-0 mt-0 border-transparent p-0 shadow-none"
   }
 `}>
-        <h3 className="font-bold text-slate-600 text-lg mb-2">Details</h3>
-        <div>
-          {(Object.keys(details) as (keyof typeof details)[]).map((key) => (
-            <div
-              key={key}
-              className="grid grid-cols-4 py-2 border-b border-slate-200">
-              <div className="capitalize font-medium">{key}:</div>
-              <div className="font-medium">{details[key]}</div>
-            </div>
-          ))}
-        </div>
+        {BookingCardDetails({ details, booking })}
       </div>
     </div>
   );

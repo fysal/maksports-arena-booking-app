@@ -1,5 +1,6 @@
 import { IFormDataType } from "@/app/dashboard/bookings/widget/EditBooking";
 import { BookingType } from "@/app/types/booking";
+import EmailHandler from "../email_handler";
 
 export default class BookingHandler {
   static async bookSlot(payload: BookingType) {
@@ -18,6 +19,10 @@ export default class BookingHandler {
       const result = await response.json();
 
       //call payment api before returning results
+
+      //Send emails
+      // console.log(payload);
+
       return result;
     } catch (error) {
       throw error;
@@ -29,26 +34,42 @@ export default class BookingHandler {
     closingTime,
     dateString,
     duration,
+    pitchId,
   }: {
     openingTime: string;
     closingTime: string;
     dateString: string;
     duration: number;
+    pitchId: string;
   }) {
     try {
+      const params = new URLSearchParams({
+        date: dateString,
+        duration: duration.toString(),
+        openingTime,
+        closingTime,
+        pitchId,
+      });
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/availability?date=${dateString}&&duration=${duration}&&openingTime=${openingTime}&&closingTime=${closingTime}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/availability?${params.toString()}`,
         {
           headers: {
-            "Content-Type": "text/json",
-            Accept: "text/json",
+            "Content-Type": "application/json",
+            Accept: "application/json",
           },
         },
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch available slots");
+      }
+
       const result = await response.json();
 
       return result;
     } catch (error) {
+      console.error("Availability request failed:", error);
       throw error;
     }
   }

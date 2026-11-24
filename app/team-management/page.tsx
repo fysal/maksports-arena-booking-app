@@ -26,6 +26,7 @@ import { BookingType, TeamMember } from "../types/booking";
 import Drawer from "../components/Drawer";
 import EditTeamDrawer from "../components/DrawerInner";
 import QuickAction from "./components/QuickAction";
+import RightSidebar from "./components/RightSidebar";
 
 const members: TeamMember[] = [
   {
@@ -68,13 +69,12 @@ const members: TeamMember[] = [
 
 export default function TeamManagementPage() {
   const [activeTab, setActiveTab] = useState<
-    "overview" | "schedule" | "members"
+    "overview" | "schedule" | "pastSchedules" | "members"
   >("overview");
 
   const [showInvite, setShowInvite] = useState(false);
-  const [now] = useState(() => Date.now()); 
+  const [now] = useState(() => Date.now());
 
-  
   const { bookings } = useContext(BookingsContext);
 
   const { teamInformation: team } = useContext(TeamContenxt);
@@ -90,7 +90,11 @@ export default function TeamManagementPage() {
     },
     {
       id: "schedule",
-      label: "Schedule",
+      label: "All Schedules",
+    },
+    {
+      id: "pastSchedules",
+      label: "Past Schedules",
     },
     // {
     //   id: "members",
@@ -104,21 +108,39 @@ export default function TeamManagementPage() {
   }
 
   const upcomingBookings = useMemo(() => {
-    return bookings.filter(
-      (booking) =>
-        (booking?.status?.toLowerCase() === "confirmed" ||
-          booking?.status?.toLowerCase() === "pending") &&
-        new Date(booking.date).getTime() > now,
-    );
+    return bookings.filter((booking) => {
+      const status = booking?.status?.toLowerCase();
+
+      if (status !== "confirmed" && status !== "pending") {
+        return false;
+      }
+
+      const bookingStart = new Date(booking.date);
+
+      const [hours, minutes] = booking.startTime.split(":").map(Number);
+
+      bookingStart.setHours(hours, minutes, 0, 0);
+
+      return bookingStart.getTime() > now;
+    });
   }, [bookings, now]);
 
-  const completedBookings = useMemo(
-    () =>
-      bookings.filter(
-        (booking) => booking?.status?.toLowerCase() === "completed",
-      ),
-    [bookings],
-  );
+  const pastSchedules = useMemo(() => {
+    return bookings.filter((booking) => {
+      const status = booking?.status?.toLowerCase();
+
+      if (status !== "confirmed" && status !== "pending") {
+        return false;
+      }
+
+      const bookingStart = new Date(booking.date);
+      const [hours, minutes] = booking.startTime.split(":").map(Number);
+
+      bookingStart.setHours(hours, minutes, 0, 0);
+
+      return bookingStart.getTime() <= now;
+    });
+  }, [bookings, now]);
 
   return (
     <main className="min-h-screen bg-[#f7faf8]  drawer drawer-end">
@@ -241,7 +263,13 @@ export default function TeamManagementPage() {
                 key={tab.id}
                 type="button"
                 onClick={() =>
-                  setActiveTab(tab.id as "overview" | "schedule" | "members")
+                  setActiveTab(
+                    tab.id as
+                      | "overview"
+                      | "schedule"
+                      | "pastSchedules"
+                      | "members",
+                  )
                 }
                 className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition cursor-pointer ${
                   activeTab === tab.id
@@ -293,71 +321,57 @@ export default function TeamManagementPage() {
             </section>
 
             {/* Right sidebar */}
-            <aside className="space-y-6">
-              {/* Quick actions */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 className="font-bold text-slate-900">Quick Actions</h3>
-
-                <div className="mt-4 space-y-2">
-                  <QuickAction
-                    icon={<CalendarDays />}
-                    title="Book Arena"
-                    description="Find an available slot"
-                    href="/booking"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={toggleDrawer}
-                    className="flex w-full items-center group cursor-pointer justify-between gap-3 rounded-xl p-3 text-left transition hover:bg-slate-50">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white w-5  transitione">
-                        <Edit3 className="h-5  " />
-                      </div>
-
-                      <div>
-                        <p className="text-sm font-semibold text-slate-900">
-                          Edit Team
-                        </p>
-
-                        <p className="text-xs text-slate-400">
-                          Update team information
-                        </p>
-                      </div>
-                    </div>
-
-                    <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-green-600" />
-                  </button>
-
-                  {/* <QuickAction
-                    icon={<UserPlus />}
-                    title="Add Member"
-                    description="Invite a teammate"
-                    href="#"
-                  /> */}
-                </div>
-              </div>
-
-              {/* Contact */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 className="font-bold text-slate-900">Team Contact</h3>
-
-                <div className="mt-5 space-y-4">
-                  <ContactRow
-                    icon={<Phone />}
-                    value={currentUser?.phoneNumber}
-                  />
-
-                  <ContactRow icon={<Mail />} value={currentUser?.email} />
-                </div>
-              </div>
-
-              {/* Protection */}
-              {/* <ProtectionBadge/> */}
-            </aside>
+            <RightSidebar
+              currentUser={currentUser}
+              toggleDrawer={toggleDrawer}
+            />
           </div>
         )}
 
+        {/*===================================================== */}
+        {/* PAST SCHEDULES */}
+        {/*===================================================== */}
+        {activeTab === "pastSchedules" && (
+          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
+            {/* Upcoming schedule */}
+            <section>
+              <SectionHeader
+                title="Past Schedule"
+                description="Your team's past arena sessions."
+                action={
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("schedule")}
+                    className="text-sm font-semibold text-green-600 hover:text-green-700">
+                    View all
+                  </button>
+                }
+              />
+
+              <div className="mt-5 space-y-4">
+                {pastSchedules.map((booking: BookingType) => (
+                  <BookingCard key={booking.bookingId} booking={booking} />
+                ))}
+              </div>
+
+              {pastSchedules.length === 0 && (
+                <EmptyState
+                  icon={<CalendarDays />}
+                  title="No past bookings"
+                  description="Your team doesn't have any past arena sessions."
+                  action="Book a slot"
+                  href="/booking"
+                />
+              )}
+            </section>
+
+            {/* Right sidebar */}
+            <RightSidebar
+              currentUser={currentUser}
+              toggleDrawer={toggleDrawer}
+            />
+          </div>
+        )}
         {/* ===================================================== */}
         {/* SCHEDULE */}
         {/* ===================================================== */}
@@ -499,7 +513,7 @@ export default function TeamManagementPage() {
 /* CONTACT */
 /* ============================================================= */
 
-function ContactRow({
+export function ContactRow({
   icon,
   value,
 }: {

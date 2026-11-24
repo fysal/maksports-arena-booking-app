@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
 
 export type BookingStatus =
@@ -8,6 +9,12 @@ export type BookingStatus =
   | "pending"
   | "in progress"
   | "available";
+
+export interface Pitch {
+  id: string;
+  name: string;
+  desc?: string;
+}
 
 export type BookingType = {
   bookingId?: string;
@@ -27,6 +34,10 @@ export type BookingType = {
   number_of_players: number;
   notes?: string;
   admin_name?: string;
+
+  pitch: Pitch;
+  [string: string]: any;
+  notifications?: INotifications;
 };
 
 export type slotBookingType = {
@@ -68,4 +79,9 @@ export type ISlot = {
   startTime: string;
   endTime: string;
   availble: boolean;
+};
+
+export type INotifications = {
+  adminNotified: boolean;
+  teamNotified: boolean;
 };

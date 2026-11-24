@@ -8,7 +8,7 @@ import {
   TeamsContext,
 } from "@/app/lib/context";
 import { TimeSlot } from "@/app/lib/utils/slots";
-import { BookingType, ISlot } from "@/app/types/booking";
+import { BookingType, ISlot, Pitch } from "@/app/types/booking";
 import { UserProfile } from "@/app/types/user";
 import { CalendarDays, Clock3, Users, CreditCard, X, Save } from "lucide-react";
 import { useContext, useMemo, useState } from "react";
@@ -64,7 +64,26 @@ export default function AdminBookSlotDrawer({
   const [availableSlots, setAvailableSlots] = useState<ISlot[]>([]);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
+  const [selectedPitch, setSelectedPitch] = useState<Pitch | null>(null);
+
   const [formData, setFormData] = useState<TFormType>(defaultFormData);
+
+  const pitches: Pitch[] = [
+    {
+      id: "mk-thdr",
+      name: "MAK Thunder",
+      desc: "Accommodates 7 players per team",
+    },
+    {
+      id: "mk-lght",
+      name: "MAK Lightening",
+      desc: "Accommodates 5 players per team",
+    },
+  ];
+
+  const handlePitchSelection = (pitch: Pitch) => {
+    setSelectedPitch(pitch);
+  };
 
   useMemo(() => {
     if (selectedDate && selectedDuration) {
@@ -78,6 +97,7 @@ export default function AdminBookSlotDrawer({
       closingTime: settings!.operatingHours.closingTime,
       dateString: selectedDate.toDateString(),
       duration: selectedDuration?.duration ?? 60,
+      pitchId: selectedPitch!.id,
     });
     if (!data) return;
 
@@ -135,6 +155,10 @@ export default function AdminBookSlotDrawer({
         endTime: formData.slot.endTime,
         status: "confirmed",
         uid: playingTeam.uid,
+        pitch: {
+          id: selectedPitch!.id,
+          name: selectedPitch!.name,
+        },
         duration: Number(selectedDuration?.duration),
         contactInformation: {
           name: captain?.name ?? "",

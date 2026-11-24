@@ -14,14 +14,11 @@ const schema = z
     contactPerson: z.string("Contact person name is required").min(6, {
       message: "Name must be longer than that",
     }),
-    phoneNumber: z
-      .string()
-      .min(10, {
-        message: "Enter a valid Phone Number",
-      })
-      .startsWith("+256"),
+    phoneNumber: z.string().regex(/^\+256(?!0)\d{9}$/, {
+      message: "Enter a valid phone number (e.g. +256772879099)",
+    }),
 
-    email: z.string().email("Enter a valid email"),
+    email: z.email("Enter a valid email"),
     password: z.string().min(6, {
       message: "Password must be 8 character or longer",
     }),
@@ -98,7 +95,7 @@ const RegisterTeam = () => {
 
           <InputField
             type="tel"
-            placeholderText="+256 700 000000"
+            placeholderText="+256700000000"
             useformProps={{ ...register("phoneNumber") }}
             error={errors.phoneNumber}
             isSubmitting={isSubmitting}

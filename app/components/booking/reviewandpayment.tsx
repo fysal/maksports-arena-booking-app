@@ -34,10 +34,6 @@ const ReviewAndPayment = ({
   error,
   onProceedToPayment,
 }: ReviewPaymentProps) => {
-  useEffect(() => {
-    console.log("Show this error");
-  }, [error]);
-
   return (
     <div className="grid gap-8 lg:grid-cols-[420px_1fr]">
       {/* LEFT COLUMN */}

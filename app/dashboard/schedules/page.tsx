@@ -8,6 +8,9 @@ import {
   Clock3,
   Users,
   Trophy,
+  Flag,
+  FlagTriangleLeft,
+  FlagTriangleRight,
 } from "lucide-react";
 import { addDays, addWeeks, format, startOfWeek } from "date-fns";
 import { StatCard } from "../components/statcards";
@@ -21,18 +24,22 @@ import Drawer from "@/app/components/Drawer";
 import AdminBookSlotDrawer from "./components/DrawerSchedular";
 
 function getStatusClasses(status: BookingStatus) {
-  switch (status) {
+  switch (status?.toLowerCase()) {
     case "confirmed":
-      return "border-green-400 bg-green-50/50 text-green-600";
+      return "border-green-200 bg-green-50 text-green-800";
 
     case "pending":
-      return "border-amber-200 bg-amber-100 text-amber-700";
+      return "border-amber-200 bg-amber-50 text-amber-800";
 
     case "canceled":
-      return "border-red-200 bg-red-100 text-red-700";
+    case "cancelled":
+      return "border-rose-200 bg-rose-50 text-rose-800";
+
+    case "completed":
+      return "border-blue-200 bg-blue-50 text-blue-800";
 
     default:
-      return "";
+      return "border-slate-200 bg-slate-50 text-slate-700";
   }
 }
 
@@ -320,29 +327,32 @@ export default function SchedulePage() {
                                   return (
                                     <div
                                       key={`${booking.pitchId}-${booking.startTime}-${booking.teamName}`}
-                                      className={`rounded-xl border p-3 ${getStatusClasses(
+                                      className={`rounded-xl border p-3 space-y-3 ${getStatusClasses(
                                         booking.status,
                                       )}`}>
-                                      <div className="font-semibold">
+                                      <div className="font-semibold text-slate-900">
                                         {booking.teamName}
                                       </div>
 
-                                      <div className="mt-1 flex items-center justify-between gap-1 text-xs">
+                                      <div className=" flex items-center justify-between gap-1 text-xs">
                                         <div>
                                           {booking.startTime} -{" "}
                                           {booking.endTime}
                                         </div>
 
                                         <div>{booking.duration} mins</div>
+                                        {/* <div>{booking.bookingId} mins</div> */}
+                                      </div>
+                                      <div className="flex items-end gap-2">
+                                        <Flag size={14} />
+                                        <div className=" text-xs font-medium text-slate-900">
+                                          {pitch?.name ?? "Unknown pitch"}
+                                        </div>
                                       </div>
 
-                                      <div className="mt-1 text-xs font-semibold">
-                                        {pitch?.name ?? "Unknown pitch"}
-                                      </div>
-
-                                      <div className="mt-1 text-xs capitalize">
+                                      {/* <div className="mt-1 text-xs capitalize">
                                         {booking.status}
-                                      </div>
+                                      </div> */}
                                     </div>
                                   );
                                 })}

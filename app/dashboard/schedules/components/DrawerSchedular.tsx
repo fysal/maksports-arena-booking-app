@@ -67,7 +67,7 @@ export default function AdminBookSlotDrawer({
   );
   const [availableSlots, setAvailableSlots] = useState<ISlot[]>([]);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
+  const [isFetchingSlots, setIsFetchingSlots] = useState<boolean>(false);
   const [selectedPitch, setSelectedPitch] = useState<Pitch | null>(null);
 
   const [formData, setFormData] = useState<TFormType>(defaultFormData);
@@ -84,39 +84,46 @@ export default function AdminBookSlotDrawer({
   }, [selectedDate, selectedDuration, selectedTime, selectedPitch]);
 
   async function fetchSlots() {
-    const date = new Date(selectedDate);
+    try {
+      const date = new Date(selectedDate);
 
-    const dateString = date.toLocaleDateString("en-CA", {
-      timeZone: "Africa/kampala",
-    });
+      const dateString = date.toLocaleDateString("en-CA", {
+        timeZone: "Africa/kampala",
+      });
 
-    // console.log(dateString);
-    // return;
+      // console.log(dateString);
+      // return;
 
-    const data = await BookingHandler.fetchAvailableslots({
-      openingTime: selectedTime!,
-      closingTime: settings!.operatingHours.closingTime,
-      dateString,
-      duration: selectedDuration?.duration ?? 60,
-      pitchId: selectedPitch!.id,
-    });
-    if (!data) return;
-    //filter the
-    const selectedHour = Number(selectedTime?.split(":")[0]);
+      setIsFetchingSlots(true);
+      const data = await BookingHandler.fetchAvailableslots({
+        openingTime: selectedTime!,
+        closingTime: settings!.operatingHours.closingTime,
+        dateString,
+        duration: selectedDuration?.duration ?? 60,
+        pitchId: selectedPitch!.id,
+      });
+      if (!data) return;
+      //filter the
+      const selectedHour = Number(selectedTime?.split(":")[0]);
 
-    const slots = data.slots.filter((slt: ISlot) => {
-      const [slotHour, slotMinutes] = slt.startTime.split(":").map(Number);
+      const slots = data.slots.filter((slt: ISlot) => {
+        const [slotHour, slotMinutes] = slt.startTime.split(":").map(Number);
 
-      const min60Slot = slt.startTime === selectedTime;
+        const min60Slot = slt.startTime === selectedTime;
 
-      const min90Slot =
-        (slotHour === selectedHour && slotMinutes === 30) ||
-        (slotHour === selectedHour + 1 && slotMinutes === 30);
+        const min90Slot =
+          (slotHour === selectedHour && slotMinutes === 30) ||
+          (slotHour === selectedHour + 1 && slotMinutes === 30);
 
-      return min60Slot || min90Slot;
-    });
-    setFormData((current) => ({ ...current, slot: slots[0] }));
-    setAvailableSlots(slots);
+        return min60Slot || min90Slot;
+      });
+      setFormData((current) => ({ ...current, slot: slots[0] }));
+      setAvailableSlots(slots);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsFetchingSlots(false);
+    }
   }
 
   useEffect(() => {
@@ -315,7 +322,12 @@ export default function AdminBookSlotDrawer({
           <div
             className={`rounded-3xl border ${isAvailable ? "border-green-100 bg-green-50/40" : "border-red-100 bg-red-50/40"} p-5`}>
             <div className="mb-5">
-              <h3 className="font-semibold text-slate-900">Select Pitch</h3>
+              <div className="flex align-center justify-between">
+                <h3 className="font-semibold text-slate-900">Select Pitch</h3>
+                {!isAvailable && (
+                  <div className="text-red-700">Not available</div>
+                )}
+              </div>
 
               <p className="mt-1 text-sm leading-6 text-slate-500 mb-4">
                 Select your preferred pitch.

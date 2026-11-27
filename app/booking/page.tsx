@@ -89,6 +89,7 @@ export default function BookPage() {
       setDuration(settings.slotPricing[0].duration);
       setFee(settings.slotPricing[0].price);
     }, 0);
+    return () => clearTimeout(timeout);
   }, [settings]);
 
   // Fetch available time slots for the selected pitch
@@ -134,8 +135,6 @@ export default function BookPage() {
     const day = String(date.getDate()).padStart(2, "0");
 
     const dateString = `${year}-${month}-${day}`;
-
-    console.log(dateString);
 
     const fTimeout = setTimeout(() => fetchAvailableSlots(dateString), 0);
 
@@ -192,8 +191,6 @@ export default function BookPage() {
     setSlotError(null);
     setActiveScreen((prev) => prev - 1);
   };
-
-  console.log(settings);
 
   // Change booking duration
   const onDurationChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {

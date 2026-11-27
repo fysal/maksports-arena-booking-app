@@ -20,16 +20,23 @@ import {
 import BookingHandler from "../lib/booking_handler";
 import { generateRandomIds } from "../lib/utils/utils";
 import { useRouter } from "next/navigation";
-import { BookingType, Pitch } from "../types/booking";
+import { BookingType } from "../types/booking";
 import Footer from "../components/Footer";
 import PageLoading from "../components/pageloading";
 import MaintenancePage from "../components/UnderMaintenance";
 import BookingForm, {
   BookingFormData,
 } from "../components/booking/bookingform";
-import { SettingsContext, TeamContenxt, UserContext } from "../lib/context";
+import {
+  PitchContext,
+  SettingsContext,
+  TeamContenxt,
+  UserContext,
+} from "../lib/context";
 import Navbar from "../components/nav/Navbar";
 import ReviewAndPayment from "../components/booking/reviewandpayment";
+import { Pitch } from "../types/pitch";
+import AdminHelper from "../lib/firebase/admin_helper_functions";
 
 export interface TimeSlot {
   startTime: string;
@@ -41,6 +48,7 @@ export default function BookPage() {
   const { settings } = useContext(SettingsContext);
   const { currentUser } = useContext(UserContext);
   const { teamInformation } = useContext(TeamContenxt);
+  const { pitches, setPitches } = useContext(PitchContext);
 
   const router = useRouter();
 
@@ -52,7 +60,7 @@ export default function BookPage() {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot>();
   const [duration, setDuration] = useState<number>(60);
   const [activeScreen, setActiveScreen] = useState<number>(0);
-  const [fee, setFee] = useState<number>(50000);
+  const [fee, setFee] = useState<number>(0);
 
   const [slotError, setSlotError] = useState<string | null>("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -66,20 +74,6 @@ export default function BookPage() {
     notes: "",
   });
 
-  // Available pitches
-  const pitches: Pitch[] = [
-    {
-      id: "mk-thdr",
-      name: "MAK Thunder",
-      desc: "Accommodates 7 players per team",
-    },
-    {
-      id: "mk-lght",
-      name: "MAK Lightening",
-      desc: "Accommodates 5 players per team",
-    },
-  ];
-
   // Booking steps
   const tabs = [
     "Select Pitch",
@@ -87,6 +81,15 @@ export default function BookPage() {
     "Information",
     "Review & Payment",
   ];
+
+  useEffect(() => {
+    if (!settings) return;
+
+    const timeout = setTimeout(() => {
+      setDuration(settings.slotPricing[0].duration);
+      setFee(settings.slotPricing[0].price);
+    }, 0);
+  }, [settings]);
 
   // Fetch available time slots for the selected pitch
   async function fetchAvailableSlots(dateString: string) {
@@ -132,6 +135,8 @@ export default function BookPage() {
 
     const dateString = `${year}-${month}-${day}`;
 
+    console.log(dateString);
+
     const fTimeout = setTimeout(() => fetchAvailableSlots(dateString), 0);
 
     return () => clearTimeout(fTimeout);
@@ -156,6 +161,16 @@ export default function BookPage() {
     return () => clearTimeout(timeout);
   }, [currentUser, teamInformation]);
 
+  const fecthPitches = async () => {
+    await AdminHelper.fetchPitches({ setPitches });
+  };
+
+  useEffect(() => {
+    if (pitches) return;
+
+    fecthPitches();
+  }, [pitches]);
+
   // Capture team information
   const captureFormData = (data: BookingFormData | unknown | any) => {
     setTeamInfo({ ...data });
@@ -177,6 +192,8 @@ export default function BookPage() {
     setSlotError(null);
     setActiveScreen((prev) => prev - 1);
   };
+
+  console.log(settings);
 
   // Change booking duration
   const onDurationChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -258,7 +275,7 @@ export default function BookPage() {
       <Navbar />
 
       <div className="mx-5 lg:mx-auto max-w-7xl py-12 relative">
-        {!settings ? (
+        {!settings || !pitches ? (
           <PageLoading />
         ) : settings.system.maintenanceMode ? (
           <MaintenancePage />
@@ -330,6 +347,7 @@ export default function BookPage() {
                       <button
                         key={pitch.id}
                         type="button"
+                        disabled={!pitch.available}
                         onClick={() => handlePitchSelection(pitch)}
                         aria-pressed={isSelected}
                         className={`group text-left rounded-2xl border-2 p-7 transition-all cursor-pointer ${
@@ -346,7 +364,11 @@ export default function BookPage() {
                             }`}>
                             <MapPin size={23} />
                           </div>
-
+                          {!pitch.available && (
+                            <div className="text-red-700 bg-red-100 p-2 rounded-lg text-sm font-meduim capitalize">
+                              {pitch.message}
+                            </div>
+                          )}
                           <div
                             className={`h-6 w-6 rounded-full border flex items-center justify-center ${
                               isSelected
@@ -571,6 +593,7 @@ export default function BookPage() {
                 selectedSlot={selectedSlot!}
                 booking={{
                   ...teamInfo,
+
                   ...{
                     pitchId: selectedPitch?.id,
                     pitchName: selectedPitch?.name,

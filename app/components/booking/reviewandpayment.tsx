@@ -9,6 +9,7 @@ import {
   ArrowRight,
   UnfoldVertical,
   Clock10Icon,
+  Flag,
 } from "lucide-react";
 import { useEffect } from "react";
 import { BookingFormData } from "./bookingform";
@@ -138,6 +139,19 @@ const ReviewAndPayment = ({
 
                   <p className="slot-label capitalize font-medium">
                     {booking.number_of_players} players
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <span className="spn">
+                  <Flag className="h-5 w-5 text-primary" />
+                </span>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">Pitch</p>
+
+                  <p className="slot-label capitalize font-medium">
+                    {booking?.pitchName}
                   </p>
                 </div>
               </div>

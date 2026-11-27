@@ -373,10 +373,10 @@ export default function BookingSuccessPage({
                   </div>
 
                   <div>
-                    <p className="text-sm text-slate-400">Location</p>
+                    <p className="text-sm text-slate-400">Pitch</p>
 
                     <p className="mt-1 text-lg font-bold text-slate-900">
-                      Mak Sports Arena
+                      {booking.pitch.name}
                     </p>
                   </div>
                 </div>

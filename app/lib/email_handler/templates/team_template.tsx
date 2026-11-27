@@ -432,7 +432,7 @@ export default function team_email_template(data: BookingType) {
                             letter-spacing: 0.5px;
                             text-transform: uppercase;
                           ">
-                            Booking amount
+                            Booking fee
                           </p>
                         </td>
                       </tr>

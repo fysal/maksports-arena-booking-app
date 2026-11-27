@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +11,7 @@ export interface BookingFormData {
   email: string;
   number_of_players?: number | string;
   notes?: string;
+  [key: string]: any;
 }
 
 interface BookingFormProps {

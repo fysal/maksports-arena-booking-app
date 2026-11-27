@@ -5,6 +5,7 @@ import { BookingType } from "@/app/types/booking";
 import { Team } from "@/app/types/team";
 import { UserProfile } from "@/app/types/user";
 import { Settings } from "@/app/types/settings";
+import { Pitch } from "@/app/types/pitch";
 
 export default class AdminHelper {
   static async fetchAllBooking({
@@ -107,6 +108,26 @@ export default class AdminHelper {
       if (response.status !== 200) throw data.message;
 
       return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async fetchPitches({
+    setPitches,
+  }: {
+    setPitches: React.Dispatch<React.SetStateAction<Pitch[] | null>>;
+  }) {
+    try {
+      onSnapshot(collection(db, "pitches"), (snapshot) => {
+        if (snapshot.empty) return setPitches([]);
+        const data = [];
+        for (const doc of snapshot.docs) {
+          data.push(doc.data() as Pitch);
+        }
+
+        setPitches(data);
+      });
     } catch (error) {
       throw error;
     }

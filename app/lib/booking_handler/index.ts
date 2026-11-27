@@ -51,6 +51,8 @@ export default class BookingHandler {
         pitchId,
       });
 
+      console.log(params);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/availability?${params.toString()}`,
         {

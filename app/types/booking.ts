@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timestamp } from "firebase/firestore";
+import { Pitch } from "./pitch";
 
 export type BookingStatus =
   | "confirmed"
@@ -9,12 +10,6 @@ export type BookingStatus =
   | "pending"
   | "in progress"
   | "available";
-
-export interface Pitch {
-  id: string;
-  name: string;
-  desc?: string;
-}
 
 export type BookingType = {
   bookingId?: string;

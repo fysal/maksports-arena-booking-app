@@ -2,6 +2,7 @@
 
 import {
   BookingsContext,
+  PitchContext,
   ProfilesContext,
   SettingsContext,
   TeamsContext,
@@ -84,6 +85,7 @@ export function Sidebar({
   const { setProfiles } = useContext(ProfilesContext);
   const { setTeams } = useContext(TeamsContext);
   const { settings, setSettings } = useContext(SettingsContext);
+  const { pitches, setPitches } = useContext(PitchContext);
 
   async function fetchBookings() {
     await AdminHelper.fetchAllBooking({
@@ -108,10 +110,10 @@ export function Sidebar({
   }
 
   useEffect(() => {
-    if (!settings) {
-      fetchSettings();
-    }
-  }, [settings]);
+    if (!settings) fetchSettings();
+
+    if (!pitches) AdminHelper.fetchPitches({ setPitches });
+  }, [settings, pitches]);
 
   useEffect(() => {
     if (!currentUser) return;

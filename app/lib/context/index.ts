@@ -4,6 +4,7 @@ import { Team } from "@/app/types/team";
 import { BookingType } from "@/app/types/booking";
 import { currentUserType, UserProfile } from "@/app/types/user";
 import { Settings } from "@/app/types/settings";
+import { Pitch } from "@/app/types/pitch";
 
 type userContextType = {
   currentUser: currentUserType | undefined | null;
@@ -56,13 +57,22 @@ export const ProfilesContext = createContext<userProfileType>({
   setProfiles: () => {},
 });
 
-
 type settingsContextType = {
   settings: Settings | null;
-  setSettings: React.Dispatch<React.SetStateAction<Settings | null>>
-}
+  setSettings: React.Dispatch<React.SetStateAction<Settings | null>>;
+};
 
 export const SettingsContext = createContext<settingsContextType>({
   settings: null,
   setSettings: () => {},
+});
+
+type pitchContextType = {
+  pitches: Pitch[] | null;
+  setPitches: React.Dispatch<React.SetStateAction<Pitch[] | null>>;
+};
+
+export const PitchContext = createContext<pitchContextType>({
+  pitches: null,
+  setPitches: () => {},
 });

@@ -3,15 +3,17 @@
 
 import BookingHandler from "@/app/lib/booking_handler";
 import {
+  PitchContext,
   ProfilesContext,
   SettingsContext,
   TeamsContext,
 } from "@/app/lib/context";
 import { TimeSlot } from "@/app/lib/utils/slots";
-import { BookingType, ISlot, Pitch } from "@/app/types/booking";
+import { BookingType, ISlot } from "@/app/types/booking";
+import { Pitch } from "@/app/types/pitch";
 import { UserProfile } from "@/app/types/user";
 import { CalendarDays, Clock3, Users, CreditCard, X, Save } from "lucide-react";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 type IDuration = {
@@ -33,6 +35,7 @@ const defaultFormData = {
   slot: {
     startTime: "",
     endTime: "",
+    available: true,
   },
 };
 
@@ -48,6 +51,7 @@ export default function AdminBookSlotDrawer({
   const { teams } = useContext(TeamsContext);
   const { settings } = useContext(SettingsContext);
   const { profiles } = useContext(ProfilesContext);
+  const { pitches } = useContext(PitchContext);
 
   const [selectedDuration, setDuration] = useState<
     IDuration | null | undefined
@@ -68,53 +72,68 @@ export default function AdminBookSlotDrawer({
 
   const [formData, setFormData] = useState<TFormType>(defaultFormData);
 
-  const pitches: Pitch[] = [
-    {
-      id: "mk-thdr",
-      name: "MAK Thunder",
-      desc: "Accommodates 7 players per team",
-    },
-    {
-      id: "mk-lght",
-      name: "MAK Lightening",
-      desc: "Accommodates 5 players per team",
-    },
-  ];
-
-  const handlePitchSelection = (pitch: Pitch) => {
-    setSelectedPitch(pitch);
-  };
+  const [color, setColor] = useState<string>("green-600");
+  const [isAvailable, setIsAvailable] = useState<boolean>(true);
 
   useMemo(() => {
-    if (selectedDate && selectedDuration) {
+    if (!selectedPitch) return;
+
+    if (selectedDate && selectedDuration && selectedPitch) {
       fetchSlots();
     }
-  }, [selectedDate, selectedDuration, selectedTime]);
+  }, [selectedDate, selectedDuration, selectedTime, selectedPitch]);
 
   async function fetchSlots() {
+    const date = new Date(selectedDate);
+
+    const dateString = date.toLocaleDateString("en-CA", {
+      timeZone: "Africa/kampala",
+    });
+
+    // console.log(dateString);
+    // return;
+
     const data = await BookingHandler.fetchAvailableslots({
-      openingTime: settings!.operatingHours.openingTime,
+      openingTime: selectedTime!,
       closingTime: settings!.operatingHours.closingTime,
-      dateString: selectedDate.toDateString(),
+      dateString,
       duration: selectedDuration?.duration ?? 60,
       pitchId: selectedPitch!.id,
     });
     if (!data) return;
-
     //filter the
+    const selectedHour = Number(selectedTime?.split(":")[0]);
 
     const slots = data.slots.filter((slt: ISlot) => {
+      const [slotHour, slotMinutes] = slt.startTime.split(":").map(Number);
+
       const min60Slot = slt.startTime === selectedTime;
 
-      const mins90Slot = slt.startTime === selectedTime?.split(":")[0] + ":30";
+      const min90Slot =
+        (slotHour === selectedHour && slotMinutes === 30) ||
+        (slotHour === selectedHour + 1 && slotMinutes === 30);
 
-      return min60Slot || mins90Slot;
+      return min60Slot || min90Slot;
     });
-
     setFormData((current) => ({ ...current, slot: slots[0] }));
-
     setAvailableSlots(slots);
   }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!formData.slot.startTime) return;
+
+      setIsAvailable(formData.slot.available!);
+
+      if (formData.slot?.available) {
+        setColor("green-600");
+      } else {
+        setColor("red-600");
+      }
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [formData.slot?.available]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
@@ -126,6 +145,7 @@ export default function AdminBookSlotDrawer({
       setFormData((current) => ({
         ...current,
         slot: {
+          ...current.slot,
           startTime: vals[0].trim(),
           endTime: vals[1].trim(),
         },
@@ -185,13 +205,16 @@ export default function AdminBookSlotDrawer({
     }
   }
 
+  if (!pitches) return <div>Loading</div>;
+
   return (
     <form onSubmit={bookTeamSlot} className="flex h-full flex-col bg-white">
       {/* Header */}
       <div className="flex items-start justify-between border-b border-slate-200 px-6 py-5">
         <div>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600">
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-xl ${isAvailable ? "bg-green-50" : "bg-red-50"} text-${color}`}>
               <CalendarDays size={19} />
             </div>
 
@@ -224,13 +247,17 @@ export default function AdminBookSlotDrawer({
               Selected Date
             </label>
 
-            <div className="flex items-center gap-3 rounded-2xl border border-green-200 bg-green-50/50 px-4 py-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-600">
+            <div
+              className={`flex items-center gap-3 rounded-2xl border 
+            ${isAvailable ? "border-green-200 bg-green-50/50" : "border-red-200 bg-red-50/50"} px-4 py-4`}>
+              <div
+                className={`flex h-10 w-10 items-center justify-center rounded-xl ${isAvailable ? "bg-green-50" : "bg-red-50"} text-${color}`}>
                 <CalendarDays size={18} />
               </div>
 
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-green-600">
+                <p
+                  className={`text-xs font-medium uppercase tracking-wide text-${color}`}>
                   Booking Date
                 </p>
 
@@ -265,7 +292,7 @@ export default function AdminBookSlotDrawer({
                 name="team"
                 onChange={handleChange}
                 required
-                className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-10 pr-10 text-sm text-slate-700 outline-none capitalize transition focus:border-green-500 focus:ring-4 focus:ring-green-500/10">
+                className={`h-12 w-full appearance-none rounded-xl border  bg-white pl-10 pr-10 text-sm text-slate-700 outline-none capitalize transition  focus:ring-4  ${isAvailable ? "border-slate-200 focus:border-green-500 focus:ring-green-500/10" : "border-red-200 focus:border-red-500 focus:ring-red-500/10"}`}>
                 <option value="" disabled>
                   Select a team
                 </option>
@@ -283,146 +310,175 @@ export default function AdminBookSlotDrawer({
             </div>
           </div>
 
-          {/* Booking Time */}
-          <div className="rounded-3xl border border-green-100 bg-green-50/40 p-5">
+          {/* Select Pitch */}
+
+          <div
+            className={`rounded-3xl border ${isAvailable ? "border-green-100 bg-green-50/40" : "border-red-100 bg-red-50/40"} p-5`}>
             <div className="mb-5">
-              <h3 className="font-semibold text-slate-900">Booking Time</h3>
+              <h3 className="font-semibold text-slate-900">Select Pitch</h3>
 
-              <p className="mt-1 text-sm leading-6 text-slate-500">
-                Select the time and duration for the booking.
+              <p className="mt-1 text-sm leading-6 text-slate-500 mb-4">
+                Select your preferred pitch.
               </p>
-            </div>
 
-            <div className="space-y-5">
-              {/* Duration */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Duration
-                </label>
+              <div className="grid grid-cols-2 gap-3">
+                {pitches?.map((pitch) => (
+                  <button
+                    key={pitch.id}
+                    id={pitch.id}
+                    type="button"
+                    onClick={() => setSelectedPitch(pitch)}
+                    className={`cursor-pointer rounded-xl border p-4 text-left transition ${
+                      selectedPitch?.id === pitch.id
+                        ? isAvailable
+                          ? "border-green-500 bg-green-50 ring-2 ring-green-500/10"
+                          : "border-red-500 bg-red-50 ring-2 ring-red-500/10"
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-slate-900">
+                        {pitch.name}
+                      </span>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {settings?.slotPricing.map((slotPrice) => (
-                    <button
-                      type="button"
-                      key={slotPrice.id}
-                      onClick={() =>
-                        setDuration({
-                          id: slotPrice.id,
-                          duration: slotPrice.duration,
-                          price: slotPrice.price,
-                          available: slotPrice.enabled ?? true,
-                        })
-                      }
-                      className={`cursor-pointer rounded-xl border p-4 text-left  ${selectedDuration?.duration === slotPrice.duration ? "border-green-500 bg-green-50 ring-2 ring-green-500/10" : "border-slate-200 bg-white transition hover:border-slate-300"}`}>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-slate-900">
-                          {slotPrice.duration} Minutes
+                      {selectedPitch?.id === pitch.id && (
+                        <span
+                          className={`flex h-5 w-5 items-center justify-center rounded-full bg-${color} text-white`}>
+                          <span className="text-xs">✓</span>
                         </span>
-
-                        {selectedDuration?.duration === slotPrice.duration && (
-                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-white">
-                            <span className="text-xs">✓</span>
-                          </span>
-                        )}
-                      </div>
-
-                      <p className="mt-1 text-xs text-slate-500">
-                        UGX{" "}
-                        {slotPrice.price.toLocaleString("en-us", {
-                          currency: "ugx",
-                        })}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* Start Time */}
-              {availableSlots && availableSlots.length > 1 && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Start Time
-                  </label>
-
-                  <div className="relative">
-                    <Clock3
-                      size={17}
-                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-
-                    <select
-                      name="slot"
-                      defaultValue=""
-                      onChange={handleChange}
-                      className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-10 pr-10 text-sm text-slate-700 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-500/10">
-                      <option value="" disabled>
-                        Select slot
-                      </option>
-                      {availableSlots.map((slot: ISlot, idx: number) => (
-                        <option
-                          key={idx}
-                          value={`${slot.startTime} - ${slot.endTime}`}>
-                          {slot.startTime} - {slot.endTime}
-                        </option>
-                      ))}
-                    </select>
-
-                    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
-                      ▾
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Booking Summary */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-slate-400">Session</p>
-
-                    <p className="mt-1 font-semibold text-slate-900">
-                      {/* {formData.slot} */}
-                      {formData.slot?.startTime} - {formData.slot?.endTime}
-                    </p>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-xs text-slate-400">Total</p>
-
-                    <p className="mt-1 font-semibold text-green-600">
-                      UGX {selectedDuration?.price.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Availability */}
-              <div className="flex items-center gap-3 rounded-2xl border border-green-200 bg-green-50 p-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round">
-                    <path d="m5 12 4 4L19 6" />
-                  </svg>
-                </div>
-
-                <div>
-                  <p className="text-sm font-semibold text-green-800">
-                    Time slot available
-                  </p>
-
-                  <p className="mt-0.5 text-xs text-green-700">
-                    This time is available for booking.
-                  </p>
-                </div>
+                      )}
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500">{pitch.desc}</p>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
+
+          {/* Booking Time */}
+          {selectedPitch && (
+            <div
+              className={`rounded-3xl border ${isAvailable ? "border-green-100 bg-green-50/40" : "border-red-100 bg-red-50/40"}  p-5`}>
+              <div className="mb-5">
+                <h3 className="font-semibold text-slate-900">Booking Time</h3>
+
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Select the time and duration for the booking.
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                {/* Duration */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Duration
+                  </label>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    {settings?.slotPricing.map((slotPrice) => (
+                      <button
+                        type="button"
+                        key={slotPrice.id}
+                        onClick={() =>
+                          setDuration({
+                            id: slotPrice.id,
+                            duration: slotPrice.duration,
+                            price: slotPrice.price,
+                            available: slotPrice.enabled ?? true,
+                          })
+                        }
+                        className={`cursor-pointer rounded-xl border p-4 text-left  ${
+                          selectedDuration?.duration === slotPrice.duration
+                            ? isAvailable
+                              ? "border-green-500 bg-green-50 ring-2 ring-green-500/10"
+                              : "border-red-500 bg-red-50 ring-2 ring-red-500/10"
+                            : "border-slate-200 bg-white hover:border-slate-300"
+                        }`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-slate-900">
+                            {slotPrice.duration} Minutes
+                          </span>
+
+                          {selectedDuration?.duration ===
+                            slotPrice.duration && (
+                            <span
+                              className={`flex h-5 w-5 items-center justify-center rounded-full bg-${color} text-white`}>
+                              <span className="text-xs">✓</span>
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="mt-1 text-xs text-slate-500">
+                          UGX{" "}
+                          {slotPrice.price.toLocaleString("en-us", {
+                            currency: "ugx",
+                          })}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Start Time */}
+                {/* Booking Summary */}
+                <div
+                  className={`rounded-2xl border   p-4 ${formData.slot?.available ? "border-slate-200 bg-white" : "border-red-700 bg-red-100/50"}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-slate-400">Session</p>
+
+                      <p
+                        className={`mt-1 font-semibold ${formData.slot?.available ? "text-slate-900" : "text-red-700"} `}>
+                        {/* {formData.slot} */}
+                        {formData.slot?.startTime} - {formData.slot?.endTime}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-slate-400">Total</p>
+
+                      <p
+                        className={`mt-1 font-semibold ${formData.slot?.available ? "text-green-600" : "text-red-700"}`}>
+                        UGX {selectedDuration?.price.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Availability */}
+                <div
+                  className={`flex items-center gap-3 rounded-2xl border ${formData.slot?.available ? " border-green-200 bg-green-50" : " border-red-200 bg-red-50"}  p-4`}>
+                  <div
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${formData.slot?.available ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"} `}>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
+                      <path d="m5 12 4 4L19 6" />
+                    </svg>
+                  </div>
+
+                  <div>
+                    <p
+                      className={`text-sm font-semibold ${formData.slot?.available ? "text-green-800" : "text-red-800"}`}>
+                      {formData.slot?.available
+                        ? " Time slot available"
+                        : "Time slot not available"}
+                    </p>
+
+                    <p
+                      className={`mt-0.5 text-xs ${formData.slot?.available ? "text-green-700" : "text-red-700"}`}>
+                      {formData.slot?.available
+                        ? "This time is available for booking."
+                        : "This time is not available for booking at the moment."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Skip Payment */}
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -469,8 +525,8 @@ export default function AdminBookSlotDrawer({
 
           <button
             type="submit"
-            disabled={isProcessing}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700">
+            disabled={isProcessing || !isAvailable}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 disabled:bg-slate-100 px-4 py-3 text-sm font-semibold text-white disabled:text-slate-500 transition hover:bg-green-700">
             <Save size={17} />
             {isProcessing ? "Booking slot..." : "Create Booking"}
           </button>

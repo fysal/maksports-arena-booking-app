@@ -30,10 +30,18 @@ function BookingCardDetails({
             </div>
           </div>
         ))}
+        <div className="grid grid-cols-2 py-3 border-b border-slate-100">
+          <div className="text-sm font-medium capitalize text-slate-500">
+            Pitch
+          </div>
+          <div className="text-sm font-semibold text-slate-800 sm:text-right break-words">
+            {booking.pitch.name}
+          </div>
+        </div>
       </div>
       <button
         onClick={() => printBooking(booking)}
-        className="cursor-pointer flex items-center gap-2 rounded mt-3 border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+        className="cursor-pointer flex items-center gap-2 rounded-lg mt-3 border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
         <PrinterCheck size={17} />
         Print Receipt
       </button>

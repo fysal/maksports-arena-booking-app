@@ -54,6 +54,7 @@ export const printBooking = (data: BookingType) => {
   const duration = escapeHtml(data.duration);
   const fee = formatAmount(data.fee);
   const status = escapeHtml(data.status);
+  const pitch = escapeHtml(data.pitch.name);
 
   const printedOn = escapeHtml(
     new Date().toLocaleString("en-UG", {
@@ -245,6 +246,7 @@ export const printBooking = (data: BookingType) => {
             <tr><td>End Time</td><td>${endTime}</td></tr>
             <tr><td>Duration</td><td>${duration}</td></tr>
             <tr><td>Booking Amount</td><td>${fee}</td></tr>
+            <tr><td>Pitch</td><td>${pitch}</td></tr>
             <tr>
               <td>Payment Status</td>
               <td><span class="status">${status}</span></td>
